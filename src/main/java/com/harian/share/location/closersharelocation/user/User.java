@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import ch.qos.logback.core.subst.Token;
+import com.harian.share.location.closersharelocation.token.Token;
 
 @Data
 @Builder
@@ -29,8 +29,7 @@ public class User implements UserDetails {
   @Id
   @GeneratedValue
   private Integer id;
-  private String firstname;
-  private String lastname;
+  private String name;
   private String email;
   private String password;
 
