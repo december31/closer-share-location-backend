@@ -3,6 +3,7 @@ package com.harian.share.location.closersharelocation.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.harian.share.location.closersharelocation.config.JwtService;
 import com.harian.share.location.closersharelocation.exception.EmailAlreadyExistedException;
+import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.token.Token;
 import com.harian.share.location.closersharelocation.token.TokenRepository;
 import com.harian.share.location.closersharelocation.token.TokenType;
@@ -32,7 +33,8 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) throws EmailAlreadyExistedException {
         User user = userRepository.findByEmail(request.getEmail()).orElse(null);
         if (user != null) {
-            throw new EmailAlreadyExistedException("An account with email '" + request.getEmail() + "' already existed");
+            throw new EmailAlreadyExistedException(
+                    "An account with email '" + request.getEmail() + "' already existed");
         }
 
         // todo send otp
@@ -57,13 +59,13 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws UserNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()));
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new UserNotFoundException("User not found for email '" + request.getEmail() + "'"));
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
@@ -71,6 +73,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .user(user)
                 .build();
     }
 

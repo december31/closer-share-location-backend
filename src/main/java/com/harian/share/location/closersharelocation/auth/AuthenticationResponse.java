@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.user.Gender;
 import com.harian.share.location.closersharelocation.user.User;
 
-import ch.qos.logback.core.subst.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,6 @@ public class AuthenticationResponse {
   private String avatar;
   private Gender gender;
   private String email;
-  private Token token; 
   @JsonProperty("access_token")
   private String accessToken;
   @JsonProperty("refresh_token")

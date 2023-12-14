@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.EmailAlreadyExistedException;
+import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 
 import java.io.IOException;
 
@@ -45,9 +46,24 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/authenticate")
-	public ResponseEntity<AuthenticationResponse> authenticate(
+	public ResponseEntity<Response<Object>> authenticate(
 			@RequestBody AuthenticationRequest request) {
-		return ResponseEntity.ok(service.authenticate(request));
+
+		Response<Object> response;
+		try {
+			response = Response.builder()
+					.status(HttpStatus.OK)
+					.message("register successful")
+					.data(service.authenticate(request))
+					.build();
+		} catch (UserNotFoundException e) {
+			response = Response.builder()
+					.status(HttpStatus.NOT_FOUND)
+					.message(e.getMessage())
+					.data(null)
+					.build();
+		}
+		return new ResponseEntity<Response<Object>>(response, response.getStatusCode());
 	}
 
 	@PostMapping("/refresh-token")
