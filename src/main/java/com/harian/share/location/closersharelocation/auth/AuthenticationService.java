@@ -5,6 +5,7 @@ import com.harian.share.location.closersharelocation.config.JwtService;
 import com.harian.share.location.closersharelocation.token.Token;
 import com.harian.share.location.closersharelocation.token.TokenRepository;
 import com.harian.share.location.closersharelocation.token.TokenType;
+import com.harian.share.location.closersharelocation.user.Role;
 import com.harian.share.location.closersharelocation.user.User;
 import com.harian.share.location.closersharelocation.user.UserRepository;
 
@@ -29,9 +30,14 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        request.fillBlankValue();
+        // todo send otp
+        request.setRole(request.getRole() == null ? Role.USER : request.getRole());
         var user = User.builder()
-                .name(request.getUsername())
+                .name(request.getName())
                 .email(request.getEmail())
+                .gender(request.getGender())
+                .description(request.getDescription())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();

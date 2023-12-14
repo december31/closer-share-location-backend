@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=closerShareLocation;encrypt=true;trustServerCertificate=true;
     username: ducan
-    password: 123
+    password: e33291fb-c0d6-4d38-a68f-80255b8ed00d
   jpa:
     hibernate:
       ddl-auto: update
@@ -11,6 +11,17 @@ spring:
       hibernate:
         "[format_sql]": false
     database-platform: org.hibernate.dialect.SQLServerDialect
+  mail:
+    host: smtp.gmail.com
+    username: ducangt3112@gmail.com
+    password: weth ayhw bjid nqyw
+    port: 587
+    properties:
+      mail: 
+        smtp:
+          auth: true
+        starttls:
+          enable: true
 application:
   security:
     jwt:

@@ -30,6 +30,9 @@ public class User implements UserDetails {
   @GeneratedValue
   private Integer id;
   private String name;
+  private String description;
+  private String avatar;
+  private String gender;
   private String email;
   private String password;
 
