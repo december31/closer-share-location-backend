@@ -32,9 +32,11 @@ public class User implements UserDetails {
   private String name;
   private String description;
   private String avatar;
-  private String gender;
   private String email;
   private String password;
+  
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
 
   @Enumerated(EnumType.STRING)
   private Role role;

@@ -2,10 +2,10 @@ package com.harian.share.location.closersharelocation.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.harian.share.location.closersharelocation.config.JwtService;
+import com.harian.share.location.closersharelocation.exception.EmailAlreadyExistedException;
 import com.harian.share.location.closersharelocation.token.Token;
 import com.harian.share.location.closersharelocation.token.TokenRepository;
 import com.harian.share.location.closersharelocation.token.TokenType;
-import com.harian.share.location.closersharelocation.user.Role;
 import com.harian.share.location.closersharelocation.user.User;
 import com.harian.share.location.closersharelocation.user.UserRepository;
 
@@ -23,17 +23,22 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        request.fillBlankValue();
+    public AuthenticationResponse register(RegisterRequest request) throws EmailAlreadyExistedException {
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+        if (user != null) {
+            throw new EmailAlreadyExistedException("An account with email '" + request.getEmail() + "' already existed");
+        }
+
         // todo send otp
-        request.setRole(request.getRole() == null ? Role.USER : request.getRole());
-        var user = User.builder()
+
+        request.fillBlankValue();
+        user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .gender(request.getGender())
@@ -41,11 +46,12 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-        var savedUser = repository.save(user);
+        var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
+                .user(savedUser)
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -56,7 +62,7 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()));
-        var user = repository.findByEmail(request.getEmail())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -102,7 +108,7 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
-            var user = this.repository.findByEmail(userEmail)
+            var user = this.userRepository.findByEmail(userEmail)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
