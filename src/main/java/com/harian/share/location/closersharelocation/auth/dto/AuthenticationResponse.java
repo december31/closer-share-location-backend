@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.auth;
+package com.harian.share.location.closersharelocation.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.user.Gender;

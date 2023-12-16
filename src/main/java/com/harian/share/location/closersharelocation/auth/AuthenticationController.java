@@ -1,5 +1,6 @@
 package com.harian.share.location.closersharelocation.auth;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +12,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.harian.share.location.closersharelocation.auth.dto.AuthenticationRequest;
+import com.harian.share.location.closersharelocation.auth.dto.RegisterRequest;
+import com.harian.share.location.closersharelocation.auth.dto.RequestOtpRequest;
 import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.EmailAlreadyExistedException;
+import com.harian.share.location.closersharelocation.exception.OtpAuthenticationException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -41,6 +47,32 @@ public class AuthenticationController {
 					.message(e.getMessage())
 					.data(null)
 					.build();
+		} catch (OtpAuthenticationException e) {
+			response = Response.builder()
+					.status(HttpStatus.UNAUTHORIZED)
+					.message(e.getMessage())
+					.data(null)
+					.build();
+		}
+		return new ResponseEntity<Response<Object>>(response, response.getStatusCode());
+	}
+
+	@PostMapping("/request-otp")
+	public ResponseEntity<Response<Object>> requestOtp(@RequestBody RequestOtpRequest request) {
+		Response<Object> response;
+		try {
+			service.requestOtp(request);
+			response = Response.builder()
+					.status(HttpStatus.OK)
+					.message("OTP is being sent to you, please check the spam emails if you didn't receive it")
+					.data(null)
+					.build();
+		} catch (UnsupportedEncodingException | MessagingException e) {
+			response = Response.builder()
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.message(e.getMessage())
+					.data(null)
+					.build();
 		}
 		return new ResponseEntity<Response<Object>>(response, response.getStatusCode());
 	}
@@ -53,10 +85,11 @@ public class AuthenticationController {
 		try {
 			response = Response.builder()
 					.status(HttpStatus.OK)
-					.message("register successful")
+					.message("authenticate successful")
 					.data(service.authenticate(request))
 					.build();
 		} catch (UserNotFoundException e) {
+			e.printStackTrace();
 			response = Response.builder()
 					.status(HttpStatus.NOT_FOUND)
 					.message(e.getMessage())

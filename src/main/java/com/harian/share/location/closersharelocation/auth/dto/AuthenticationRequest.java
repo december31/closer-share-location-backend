@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.auth;
+package com.harian.share.location.closersharelocation.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

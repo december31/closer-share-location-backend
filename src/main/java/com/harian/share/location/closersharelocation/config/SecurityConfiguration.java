@@ -26,6 +26,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {
+            "/error/**",
             "/avatar/**",
             "/api/v1/auth/**",
             "/v2/api-docs",
@@ -50,18 +51,20 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(req -> req.requestMatchers(WHITE_LIST_URL)
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**")
-                        .permitAll()
                         .requestMatchers("/api/v1/management/**")
                         .hasAnyRole(Role.ADMIN.name(), Role.MANAGER.name())
                         .requestMatchers(HttpMethod.GET, "/api/v1/management/**")
-                        .hasAnyAuthority(Permission.ADMIN_READ.name(), Permission.MANAGER_READ.name())
+                        .hasAnyAuthority(Permission.ADMIN_READ.name(),
+                                Permission.MANAGER_READ.name())
                         .requestMatchers(HttpMethod.POST, "/api/v1/management/**")
-                        .hasAnyAuthority(Permission.ADMIN_CREATE.name(), Permission.MANAGER_CREATE.name())
+                        .hasAnyAuthority(Permission.ADMIN_CREATE.name(),
+                                Permission.MANAGER_CREATE.name())
                         .requestMatchers(HttpMethod.PUT, "/api/v1/management/**")
-                        .hasAnyAuthority(Permission.ADMIN_UPDATE.name(), Permission.MANAGER_UPDATE.name())
+                        .hasAnyAuthority(Permission.ADMIN_UPDATE.name(),
+                                Permission.MANAGER_UPDATE.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/management/**")
-                        .hasAnyAuthority(Permission.ADMIN_DELETE.name(), Permission.MANAGER_DELETE.name())
+                        .hasAnyAuthority(Permission.ADMIN_DELETE.name(),
+                                Permission.MANAGER_DELETE.name())
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

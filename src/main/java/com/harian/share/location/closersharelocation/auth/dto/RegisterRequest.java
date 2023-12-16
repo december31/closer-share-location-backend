@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.auth;
+package com.harian.share.location.closersharelocation.auth.dto;
 
 import com.harian.share.location.closersharelocation.user.Gender;
 import com.harian.share.location.closersharelocation.user.Role;
@@ -19,11 +19,13 @@ public class RegisterRequest {
     private Gender gender;
     private String email;
     private String password;
+    private String otp;
     private Role role;
 
     public void fillBlankValue() {
         name = name == null || name.isBlank() ? email.split("@")[0] : name;
         role = role == null ? Role.USER : role;
         gender = gender == null ? Gender.UNDEFINED : gender;
+        avatar = avatar == null ? ("avatar/avatar" + Math.ceil(Math.random() * 12) + ".png") : avatar;
     }
 }
