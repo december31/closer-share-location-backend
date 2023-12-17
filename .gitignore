@@ -34,3 +34,4 @@ build/
 
 run.bat
 publish.bat
+deploy.bat

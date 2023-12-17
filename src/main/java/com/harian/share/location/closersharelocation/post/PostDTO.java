@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.harian.share.location.closersharelocation.comment.CommentDTO;
 import com.harian.share.location.closersharelocation.user.User;
+import com.harian.share.location.closersharelocation.user.UserDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,7 @@ public class PostDTO {
     private Long lastModified;
     private User owner;
     List<CommentDTO> comments;
+    List<UserDTO> likes;
 
     public PostDTO(Post post) {
         this.id = post.getId();
@@ -34,10 +36,14 @@ public class PostDTO {
         this.createdTime = post.getCreatedTime();
         this.lastModified = post.getLastModified();
         this.owner = post.getOwner();
-        if (post.getComments() == null) post.setComments(List.of());
-        this.comments = post.getComments().stream().map(comment -> CommentDTO.builder()
-                .id(comment.getId())
-                .content(comment.getContent())
-                .build()).collect(Collectors.toList());
+
+        if (post.getComments() == null)
+            post.setComments(List.of());
+        this.comments = post.getComments().stream().map(comment -> new CommentDTO(comment))
+                .collect(Collectors.toList());
+
+        if (post.getLikes() == null)
+            post.setLikes(List.of());
+        this.likes = post.getLikes().stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
     }
 }

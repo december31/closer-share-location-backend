@@ -29,4 +29,5 @@ public class Comment {
     private Post post;
 
     private String content;
+    private Long createdTime;
 }

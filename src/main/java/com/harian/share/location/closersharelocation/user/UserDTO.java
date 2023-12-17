@@ -16,4 +16,13 @@ public class UserDTO {
     private String avatar;
     private String email;
     private Gender gender;
+
+    public UserDTO(User user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.description = user.getDescription();
+        this.avatar = user.getAvatar();
+        this.email = user.getEmail();
+        this.gender = user.getGender();
+    }
 }

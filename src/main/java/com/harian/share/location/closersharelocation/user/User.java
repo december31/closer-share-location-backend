@@ -73,7 +73,8 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_post_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
     private List<Post> likedPosts;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Post> ownedPosts;
 
@@ -99,27 +100,32 @@ public class User implements UserDetails {
     public String getPassword() {
         return password;
     }
-
+    
+    @JsonIgnore
     @Override
     public String getUsername() {
         return email;
     }
-
+    
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
-
+    
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
-
+    
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
+    
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
