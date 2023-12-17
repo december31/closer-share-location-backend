@@ -4,10 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -17,7 +24,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.harian.share.location.closersharelocation.comment.Comment;
+import com.harian.share.location.closersharelocation.post.Post;
 import com.harian.share.location.closersharelocation.token.Token;
 
 @Data
@@ -41,6 +51,8 @@ public class User implements UserDetails {
     private String avatar;
     private String email;
     private String password;
+    private Long createdTime;
+    private Long lastModified;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String otp;
@@ -53,14 +65,36 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Token> tokens;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_post_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
+    private List<Post> likedPosts;
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private List<Post> ownedPosts;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private List<Comment> comments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
 
+    public String getCreatedTime() {
+        return new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(createdTime));
+    }
+
+    public String getLastModified() {
+        return new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(lastModified));
+    }
+
+    @JsonIgnore
     @Override
     public String getPassword() {
         return password;

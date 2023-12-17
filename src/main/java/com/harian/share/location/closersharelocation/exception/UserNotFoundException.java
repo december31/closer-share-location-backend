@@ -1,6 +1,8 @@
 package com.harian.share.location.closersharelocation.exception;
 
-public class UserNotFoundException extends Exception {
+import org.springframework.security.core.AuthenticationException;
+
+public class UserNotFoundException extends AuthenticationException {
     public UserNotFoundException(String message) {
         super(message);
     }

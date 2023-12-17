@@ -1,14 +1,13 @@
 package com.harian.share.location.closersharelocation.auth;
 
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +17,10 @@ import com.harian.share.location.closersharelocation.auth.dto.RequestOtpRequest;
 import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.EmailAlreadyExistedException;
 import com.harian.share.location.closersharelocation.exception.OtpAuthenticationException;
+import com.harian.share.location.closersharelocation.exception.TokenAuthenticationException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
+
+import io.micrometer.common.lang.Nullable;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -100,9 +102,28 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/refresh-token")
-	public void refreshToken(
-			HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
-		service.refreshToken(request, response);
+	public ResponseEntity<Response<Object>> refreshToken(@RequestHeader("RefreshToken") @Nullable String refreshToken) {
+		Response<Object> response;
+		try {
+			response = Response.builder()
+					.status(HttpStatus.OK)
+					.message("token refreshed successful")
+					.data(service.refreshToken(refreshToken))
+					.build();
+		} catch (TokenAuthenticationException e) {
+			response = Response.builder()
+					.status(HttpStatus.UNAUTHORIZED)
+					.message(e.getMessage())
+					.data(null)
+					.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			response = Response.builder()
+					.status(HttpStatus.BAD_REQUEST)
+					.message("Something goes wrong with your refresh token")
+					.data(null)
+					.build();
+		}
+		return new ResponseEntity<Response<Object>>(response, response.getStatusCode());
 	}
 }

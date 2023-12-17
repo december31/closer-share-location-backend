@@ -1,6 +1,5 @@
 package com.harian.share.location.closersharelocation.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.harian.share.location.closersharelocation.auth.dto.AuthenticationRequest;
 import com.harian.share.location.closersharelocation.auth.dto.AuthenticationResponse;
 import com.harian.share.location.closersharelocation.auth.dto.RegisterRequest;
@@ -8,6 +7,7 @@ import com.harian.share.location.closersharelocation.auth.dto.RequestOtpRequest;
 import com.harian.share.location.closersharelocation.config.JwtService;
 import com.harian.share.location.closersharelocation.exception.EmailAlreadyExistedException;
 import com.harian.share.location.closersharelocation.exception.OtpAuthenticationException;
+import com.harian.share.location.closersharelocation.exception.TokenAuthenticationException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.token.Token;
 import com.harian.share.location.closersharelocation.token.TokenRepository;
@@ -17,10 +17,7 @@ import com.harian.share.location.closersharelocation.user.UserRepository;
 import com.harian.share.location.closersharelocation.utils.Constants;
 
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,10 +53,6 @@ public class AuthenticationService {
         } else {
             if (System.currentTimeMillis() - user.getOtpRequestedTime() > Constants.OTP_VALID_TIME) {
 
-                System.out.println(request.getOtp());
-                System.out.println(request.getOtp());
-                System.out.println(passwordEncoder.encode(user.getOtp()));
-
                 if (passwordEncoder.matches(request.getOtp(), user.getOtp())) {
                     request.fillBlankValue();
 
@@ -71,6 +64,8 @@ public class AuthenticationService {
                     user.setDescription(request.getDescription());
                     user.setPassword(passwordEncoder.encode(request.getPassword()));
                     user.setRole(request.getRole());
+                    user.setCreatedTime(System.currentTimeMillis());
+                    user.setLastModified(System.currentTimeMillis());
 
                     user = userRepository.save(user);
                     var jwtToken = jwtService.generateToken(user);
@@ -140,16 +135,14 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    public AuthenticationResponse refreshToken(String token) throws IOException, TokenAuthenticationException {
+
         final String refreshToken;
         final String userEmail;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new TokenAuthenticationException("Refresh token not found");
         }
-        refreshToken = authHeader.substring(7);
+        refreshToken = token.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
             var user = this.userRepository.findByEmail(userEmail)
@@ -161,9 +154,11 @@ public class AuthenticationService {
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
+                        .user(user)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+                return authResponse;
             }
         }
+        throw new TokenAuthenticationException("Authentication failed");
     }
 }
