@@ -26,8 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.harian.share.location.closersharelocation.comment.Comment;
 import com.harian.share.location.closersharelocation.post.Post;
+import com.harian.share.location.closersharelocation.post.comment.Comment;
 import com.harian.share.location.closersharelocation.token.Token;
 
 @Data

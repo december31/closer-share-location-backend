@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +61,8 @@ public class JwtService {
             .builder()
             .setClaims(extraClaims)
             .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
+            .setIssuedAt(new Date(Instant.now().toEpochMilli()))
+            .setExpiration(new Date(Instant.now().toEpochMilli() + expiration))
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
   }

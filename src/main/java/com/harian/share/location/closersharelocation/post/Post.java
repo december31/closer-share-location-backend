@@ -3,9 +3,10 @@ package com.harian.share.location.closersharelocation.post;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.harian.share.location.closersharelocation.comment.Comment;
+import com.harian.share.location.closersharelocation.post.comment.Comment;
 import com.harian.share.location.closersharelocation.user.User;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -24,9 +25,11 @@ public class Post {
     private Long id;
     private String title;
     private String content;
-    private List<String> images;
     private Long createdTime;
     private Long lastModified;
+
+    @ElementCollection
+    private List<String> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -36,7 +39,7 @@ public class Post {
     @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("likedPosts")
     List<User> likes;
-
+    
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     List<Comment> comments;
 }

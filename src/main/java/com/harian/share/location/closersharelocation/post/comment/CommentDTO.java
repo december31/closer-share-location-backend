@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.comment;
+package com.harian.share.location.closersharelocation.post.comment;
 
 import com.harian.share.location.closersharelocation.user.UserDTO;
 

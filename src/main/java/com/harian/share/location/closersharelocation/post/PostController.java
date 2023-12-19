@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
+import com.harian.share.location.closersharelocation.post.comment.Comment;
+import com.harian.share.location.closersharelocation.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,14 +30,52 @@ public class PostController {
     private final PostService service;
 
     @PostMapping("create")
-    public Object create(@RequestParam(name = "image", required = false) MultipartFile file, @RequestBody Post post,
-            Principal connectedUser) {
+    public Object create(@RequestBody Post post, Principal connectedUser) {
         Response<?> response = Response.builder()
                 .status(HttpStatus.OK)
                 .message("create post successful")
                 .data(new PostDTO(service.create(post, connectedUser)))
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("images/upload")
+    public Object uploadPostImages(@RequestParam("images") List<MultipartFile> files,
+            @RequestParam(name = "post-id") Long postId) {
+        Response<?> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message(Constants.SUCCESSFUL)
+                    .data(service.savePostImages(files, postId))
+                    .build();
+        } catch (PostNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<>(response, null, response.getStatusCode());
+    }
+
+    @PostMapping("comment")
+    public Object comment(@RequestBody Comment comment, @RequestParam("post-id") Long postId, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(service.createComment(comment, connectedUser, postId))
+                    .build();
+        } catch (PostNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<>(response, null, response.getStatusCode());
     }
 
     @GetMapping("/popular")
@@ -71,6 +111,5 @@ public class PostController {
                     .build();
         }
         return new ResponseEntity<>(response, null, response.getStatusCode());
-
     }
 }

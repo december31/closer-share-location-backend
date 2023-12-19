@@ -1,6 +1,6 @@
-package com.harian.share.location.closersharelocation.comment;
+package com.harian.share.location.closersharelocation.post.comment;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.post.Post;
 import com.harian.share.location.closersharelocation.user.User;
 
@@ -25,7 +25,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Post post;
 
     private String content;

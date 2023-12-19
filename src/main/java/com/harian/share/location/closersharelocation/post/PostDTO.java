@@ -3,7 +3,7 @@ package com.harian.share.location.closersharelocation.post;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.harian.share.location.closersharelocation.comment.CommentDTO;
+import com.harian.share.location.closersharelocation.post.comment.CommentDTO;
 import com.harian.share.location.closersharelocation.user.User;
 import com.harian.share.location.closersharelocation.user.UserDTO;
 
