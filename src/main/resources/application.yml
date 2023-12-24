@@ -27,6 +27,10 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+  servlet:
+    multipart:
+      max-request-size: 20MB
+      max-file-size: 20MB
 application:
   security:
     jwt:

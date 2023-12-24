@@ -3,20 +3,22 @@ package com.harian.share.location.closersharelocation.post;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
 import com.harian.share.location.closersharelocation.utils.Constants;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,34 +31,15 @@ public class PostController {
 
     private final PostService service;
 
-    @PostMapping("create")
-    public Object create(@RequestBody Post post, Principal connectedUser) {
+    @PostMapping(value = "create", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public Object create(HttpServletRequest request, Principal connectedUser)
+            throws IOException, ServletException {
         Response<?> response = Response.builder()
                 .status(HttpStatus.OK)
                 .message("create post successful")
-                .data(new PostDTO(service.create(post, connectedUser)))
+                .data(new PostDTO(service.create(request, connectedUser)))
                 .build();
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("images/upload")
-    public Object uploadPostImages(@RequestParam("images") List<MultipartFile> files,
-            @RequestParam(name = "post-id") Long postId) {
-        Response<?> response;
-        try {
-            response = Response.builder()
-                    .status(HttpStatus.OK)
-                    .message(Constants.SUCCESSFUL)
-                    .data(service.savePostImages(files, postId))
-                    .build();
-        } catch (PostNotFoundException e) {
-            response = Response.builder()
-                    .status(HttpStatus.OK)
-                    .message(e.getMessage())
-                    .data(null)
-                    .build();
-        }
-        return new ResponseEntity<>(response, null, response.getStatusCode());
     }
 
     @PostMapping("comment")
@@ -65,7 +48,7 @@ public class PostController {
         try {
             response = Response.builder()
                     .status(HttpStatus.OK)
-                    .message("successful")
+                    .message(Constants.SUCCESSFUL)
                     .data(service.createComment(comment, connectedUser, postId))
                     .build();
         } catch (PostNotFoundException e) {
@@ -87,7 +70,7 @@ public class PostController {
 
         Response<?> response = Response.builder()
                 .status(HttpStatus.OK)
-                .message("create post successful")
+                .message(Constants.SUCCESSFUL)
                 .data(postDTOs)
                 .build();
 

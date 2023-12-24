@@ -45,7 +45,7 @@ public class User implements UserDetails {
     @Column(columnDefinition = "nvarchar(255)")
     private String name;
 
-    @Column(columnDefinition = "nvarchar(255)")
+    @Column(columnDefinition = "nvarchar(25500)")
     private String description;
 
     private String avatar;
