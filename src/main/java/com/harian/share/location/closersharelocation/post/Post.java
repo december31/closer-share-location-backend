@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
+import com.harian.share.location.closersharelocation.post.image.Image;
 import com.harian.share.location.closersharelocation.user.User;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -39,8 +39,8 @@ public class Post {
     private Long createdTime;
     private Long lastModified;
 
-    @ElementCollection
-    private List<String> images;
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    private List<Image> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

@@ -2,6 +2,7 @@ package com.harian.share.location.closersharelocation.post.comment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.post.Post;
+import com.harian.share.location.closersharelocation.post.image.Image;
 import com.harian.share.location.closersharelocation.user.User;
 
 import jakarta.persistence.Column;
@@ -28,6 +29,11 @@ public class Comment {
     @JoinColumn(name = "post_id")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Image image;
 
     private String content;
 

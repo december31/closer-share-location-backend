@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.harian.share.location.closersharelocation.post.comment.CommentDTO;
+import com.harian.share.location.closersharelocation.post.image.ImageDTO;
 import com.harian.share.location.closersharelocation.user.User;
 import com.harian.share.location.closersharelocation.user.UserDTO;
 
@@ -21,7 +22,7 @@ public class PostDTO {
     private Long id;
     private String title;
     private String content;
-    private List<String> images;
+    private List<ImageDTO> images;
     private Long createdTime;
     private Long lastModified;
     private User owner;
@@ -32,11 +33,13 @@ public class PostDTO {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.images = post.getImages();
         this.createdTime = post.getCreatedTime();
         this.lastModified = post.getLastModified();
         this.owner = post.getOwner();
 
+        if (post.getImages() != null) {
+            this.images = post.getImages().stream().map(image -> new ImageDTO(image)).collect(Collectors.toList());
+        }
         if (post.getComments() == null)
             post.setComments(List.of());
         this.comments = post.getComments().stream().map(comment -> new CommentDTO(comment))

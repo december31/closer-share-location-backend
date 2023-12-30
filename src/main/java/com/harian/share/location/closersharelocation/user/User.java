@@ -13,8 +13,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -25,15 +23,18 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.post.Post;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
+import com.harian.share.location.closersharelocation.post.image.Image;
 import com.harian.share.location.closersharelocation.token.Token;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "_user")
 public class User implements UserDetails {
@@ -73,7 +74,12 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_post_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
     private List<Post> likedPosts;
-    
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_image_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "image_id"))
+    private List<Image> likedImages;
+
     @JsonIgnore
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Post> ownedPosts;
@@ -87,44 +93,36 @@ public class User implements UserDetails {
         return role.getAuthorities();
     }
 
-    public String getCreatedTime() {
-        return new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(createdTime));
-    }
-
-    public String getLastModified() {
-        return new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(lastModified));
-    }
-
     @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
-    
+
     @JsonIgnore
     @Override
     public String getUsername() {
         return email;
     }
-    
+
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
-    
+
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
-    
+
     @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-    
+
     @JsonIgnore
     @Override
     public boolean isEnabled() {

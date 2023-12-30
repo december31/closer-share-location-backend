@@ -12,7 +12,8 @@ DROP TABLE IF EXISTS user_post_likes
 
 
 SELECT * FROM _user
-SELECT * FROM post
+SELECT * FROM post_images
+SELECT * FROM image
 SELECT token FROM token
 
 DELETE FROM token
