@@ -81,6 +81,14 @@ public class PostService {
         return commentRepository.save(comment);
     }
 
+    public Post like(Long postId, Principal connectedUser) throws PostNotFoundException {
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
+        post.likes.add(user);
+        return postRepository.save(post);
+    }
+
     public List<Post> findByPage(Integer page, Integer pageSize) {
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;

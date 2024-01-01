@@ -64,6 +64,7 @@ public class AuthenticationService {
                     user.setDescription(request.getDescription());
                     user.setPassword(passwordEncoder.encode(request.getPassword()));
                     user.setRole(request.getRole());
+                    user.setAvatar(request.getAvatar());
                     user.setCreatedTime(System.currentTimeMillis());
                     user.setLastModified(System.currentTimeMillis());
 
@@ -87,9 +88,15 @@ public class AuthenticationService {
 
     public void requestOtp(RequestOtpRequest request) throws UnsupportedEncodingException, MessagingException {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElse(User.builder().email(request.getEmail()).build());
+                .orElse(User.builder()
+                        .email(request.getEmail())
+                        .name(request.getName())
+                        .build());
         Integer otp = mailService.sendOTP(user);
         String encodedOtp = passwordEncoder.encode(otp.toString());
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName("User" + otp);
+        }
         user.setOtp(encodedOtp);
         user.setOtpRequestedTime(System.currentTimeMillis());
         userRepository.save(user);

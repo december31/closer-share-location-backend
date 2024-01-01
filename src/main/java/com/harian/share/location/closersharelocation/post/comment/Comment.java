@@ -37,6 +37,6 @@ public class Comment {
 
     private String content;
 
-    @Column(columnDefinition = "nvarchar(25500)")
+    @Column(columnDefinition = "ntext")
     private Long createdTime;
 }

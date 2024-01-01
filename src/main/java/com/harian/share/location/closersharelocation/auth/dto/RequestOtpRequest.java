@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RequestOtpRequest {
     private String email;
+    private String name;
 }

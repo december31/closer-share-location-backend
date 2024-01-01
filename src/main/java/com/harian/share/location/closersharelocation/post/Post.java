@@ -31,9 +31,9 @@ public class Post {
     @GeneratedValue
     private Long id;
 
-    @Column(columnDefinition = "nvarchar(25500)")
+    @Column(columnDefinition = "ntext")
     private String title;
-    @Column(columnDefinition = "nvarchar(25500)")
+    @Column(columnDefinition = "ntext")
     private String content;
 
     private Long createdTime;

@@ -17,3 +17,4 @@ SELECT * FROM image
 SELECT token FROM token
 
 DELETE FROM token
+DELETE FROM _user where id = 2

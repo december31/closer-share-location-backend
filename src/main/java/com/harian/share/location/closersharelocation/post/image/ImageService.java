@@ -13,7 +13,11 @@ import lombok.RequiredArgsConstructor;
 public class ImageService {
     private final ImageRepository repository;
 
-    ImageDTO comment(CommentDTO comment, Long imageId, Principal connectedUser) {
+    public ImageDTO comment(CommentDTO comment, Long imageId, Principal connectedUser) {
+        return null;
+    }
+
+    public ImageDTO like(Long imageId, Principal connectedUser) {
         return null;
     }
 }

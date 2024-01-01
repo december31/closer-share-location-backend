@@ -26,6 +26,6 @@ public class RegisterRequest {
         name = name == null || name.isBlank() ? email.split("@")[0] : name;
         role = role == null ? Role.USER : role;
         gender = gender == null ? Gender.UNDEFINED : gender;
-        avatar = avatar == null ? ("avatar/avatar" + Math.ceil(Math.random() * 12) + ".png") : avatar;
+        avatar = avatar == null ? ("avatar/avatar" + (int) Math.ceil(Math.random() * 12) + ".png") : avatar;
     }
 }
