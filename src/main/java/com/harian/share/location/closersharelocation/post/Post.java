@@ -1,6 +1,6 @@
 package com.harian.share.location.closersharelocation.post;
 
-import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
@@ -19,7 +19,9 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -39,18 +41,30 @@ public class Post {
     private Long createdTime;
     private Long lastModified;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
-    private List<Image> images;
+    private Set<Image> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties("ownedPosts")
     private User owner;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("likedPosts")
-    List<User> likes;
-    
+    private Set<User> likes;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "watchedPosts", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("watchedPosts")
+    private Set<User> watches;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
-    List<Comment> comments;
+    private Set<Comment> comments;
 }

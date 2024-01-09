@@ -15,10 +15,15 @@ import jakarta.persistence.Table;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -34,9 +39,10 @@ import com.harian.share.location.closersharelocation.token.Token;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 @Table(name = "_user")
+@EqualsAndHashCode
 public class User implements UserDetails {
 
     @Id
@@ -70,23 +76,38 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Token> tokens;
 
-    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_post_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
-    private List<Post> likedPosts;
+    private Set<Post> likedPosts;
 
-    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_post_watches", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
+    private Set<Post> watchedPosts;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_image_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "image_id"))
-    private List<Image> likedImages;
+    private Set<Image> likedImages;
 
-    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-    private List<Post> ownedPosts;
+    private Set<Post> ownedPosts;
 
-    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-    private List<Comment> comments;
+    private Set<Comment> comments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

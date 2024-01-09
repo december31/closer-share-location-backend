@@ -35,8 +35,9 @@ public class Comment {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Image image;
 
+    @Column(columnDefinition = "ntext")
     private String content;
 
-    @Column(columnDefinition = "ntext")
+    @Column(columnDefinition = "bigint")
     private Long createdTime;
 }

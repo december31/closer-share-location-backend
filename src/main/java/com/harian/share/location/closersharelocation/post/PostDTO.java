@@ -1,6 +1,6 @@
 package com.harian.share.location.closersharelocation.post;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.harian.share.location.closersharelocation.post.comment.CommentDTO;
@@ -22,12 +22,13 @@ public class PostDTO {
     private Long id;
     private String title;
     private String content;
-    private List<ImageDTO> images;
     private Long createdTime;
     private Long lastModified;
     private User owner;
-    List<CommentDTO> comments;
-    List<UserDTO> likes;
+    private Set<ImageDTO> images;
+    private Set<CommentDTO> comments;
+    private Set<UserDTO> likes;
+    private Set<UserDTO> watches;
 
     public PostDTO(Post post) {
         this.id = post.getId();
@@ -38,15 +39,19 @@ public class PostDTO {
         this.owner = post.getOwner();
 
         if (post.getImages() != null) {
-            this.images = post.getImages().stream().map(image -> new ImageDTO(image)).collect(Collectors.toList());
+            this.images = post.getImages().stream().map(image -> new ImageDTO(image)).collect(Collectors.toSet());
         }
         if (post.getComments() == null)
-            post.setComments(List.of());
+            post.setComments(Set.of());
         this.comments = post.getComments().stream().map(comment -> new CommentDTO(comment))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         if (post.getLikes() == null)
-            post.setLikes(List.of());
-        this.likes = post.getLikes().stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
+            post.setLikes(Set.of());
+        this.likes = post.getLikes().stream().map(user -> new UserDTO(user)).collect(Collectors.toSet());
+
+        if (post.getWatches() == null)
+            post.setWatches(Set.of());
+        this.watches = post.getWatches().stream().map(user -> new UserDTO(user)).collect(Collectors.toSet());
     }
 }

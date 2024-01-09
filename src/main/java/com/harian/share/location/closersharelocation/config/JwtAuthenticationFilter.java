@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.harian.share.location.closersharelocation.token.TokenRepository;
@@ -62,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            throw new BadCredentialsException("Unauthorized");
+            // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Bad credentials");
         }
         filterChain.doFilter(request, response);
     }

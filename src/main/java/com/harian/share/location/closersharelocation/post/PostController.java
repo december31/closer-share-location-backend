@@ -82,7 +82,28 @@ public class PostController {
         return new ResponseEntity<>(response, response.getStatusCode());
     }
 
-    @GetMapping("/popular")
+    @PostMapping("watch")
+    public Object watch(@RequestParam(name = "post-id") Long postId, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            PostDTO postDTO = new PostDTO(service.watch(postId, connectedUser));
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message(Constants.SUCCESSFUL)
+                    .data(postDTO)
+                    .build();
+        } catch (PostNotFoundException e) {
+            e.printStackTrace();
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<>(response, response.getStatusCode());
+    }
+
+    @GetMapping("popular")
     public Object getPopular(@RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "page-size", required = false) Integer pageSize) {
 

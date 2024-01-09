@@ -1,6 +1,8 @@
 package com.harian.share.location.closersharelocation.post.image;
 
-import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,7 +21,9 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Builder
@@ -32,12 +36,16 @@ public class Image {
     private Long id;
     private String url;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "image", fetch = FetchType.EAGER)
-    private List<Comment> comments;
+    private Set<Comment> comments;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(mappedBy = "likedImages", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("likedImages")
-    private List<User> likes;
+    private Set<User> likes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

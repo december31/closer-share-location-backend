@@ -14,6 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
 import com.harian.share.location.closersharelocation.user.User;
+import com.harian.share.location.closersharelocation.user.UserRepository;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
@@ -32,6 +34,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
 
     public Post create(HttpServletRequest request, Principal connectedUser) throws IOException, ServletException {
         ObjectMapper mapper = new ObjectMapper();
@@ -85,7 +88,21 @@ public class PostService {
         User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
-        post.likes.add(user);
+        post.getLikes().add(user);
+        user.getLikedPosts().add(post);
+        userRepository.save(user);
+        return postRepository.save(post);
+    }
+
+    public Post watch(Long postId, Principal connectedUser) throws PostNotFoundException {
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
+        if(!post.getWatches().contains(user)) {
+            post.getWatches().add(user);
+            user.getWatchedPosts().add(post);
+        }
+        userRepository.save(user);
         return postRepository.save(post);
     }
 

@@ -2,7 +2,6 @@ USE closerShareLocation
 USE master
 DROP DATABASE closerShareLocation
 CREATE DATABASE closerShareLocation
-CREATE DATABASE screencall
 DROP TABLE IF EXISTS _user
 DROP TABLE IF EXISTS token
 DROP TABLE IF EXISTS post
@@ -16,6 +15,20 @@ SELECT * FROM _user
 SELECT * FROM post_images
 SELECT * FROM image
 SELECT token FROM token
+SELECT * FROM post
+SELECT * FROM comment
+SELECT * FROM user_post_likes
+SELECT * FROM user_post_watches
+
+
+ALTER TABLE comment
+ALTER COLUMN content ntext
+
+ALTER TABLE comment
+ADD created_time bigint
+
+
+
 
 DELETE FROM token
 DELETE FROM _user where id = 2
