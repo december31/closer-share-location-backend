@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.harian.share.location.closersharelocation.auth.dto.AuthenticationRequest;
+import com.harian.share.location.closersharelocation.auth.dto.OtpAuthenticationRequest;
 import com.harian.share.location.closersharelocation.auth.dto.RegisterRequest;
 import com.harian.share.location.closersharelocation.auth.dto.RequestOtpRequest;
 import com.harian.share.location.closersharelocation.common.Response;
@@ -82,6 +83,28 @@ public class AuthenticationController {
 	@PostMapping("/authenticate")
 	public ResponseEntity<Response<Object>> authenticate(
 			@RequestBody AuthenticationRequest request) {
+
+		Response<Object> response;
+		try {
+			response = Response.builder()
+					.status(HttpStatus.OK)
+					.message("authenticate successful")
+					.data(service.authenticate(request))
+					.build();
+		} catch (UserNotFoundException e) {
+			e.printStackTrace();
+			response = Response.builder()
+					.status(HttpStatus.NOT_FOUND)
+					.message(e.getMessage())
+					.data(null)
+					.build();
+		}
+		return new ResponseEntity<Response<Object>>(response, response.getStatusCode());
+	}
+
+	@PostMapping("/otp-authenticate")
+	public ResponseEntity<Response<Object>> otpAuthenticate(
+			@RequestBody OtpAuthenticationRequest request) {
 
 		Response<Object> response;
 		try {

@@ -15,10 +15,11 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-        
+
         // check if the current password is correct
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new IllegalStateException("Wrong password");
@@ -27,15 +28,23 @@ public class UserService {
         if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
             throw new IllegalStateException("Password are not the same");
         }
-        
+
         // update the password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        
+
         // save the new password
         repository.save(user);
     }
-    
-    public User getUserInformation(Principal connectedUser) throws UserNotFoundException{
+
+    public UserDTO resetPassword(ResetPasswordRequest request, Principal connectedUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        // update the password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        // save the new password
+        return new UserDTO(repository.save(user));
+    }
+
+    public User getUserInformation(Principal connectedUser) throws UserNotFoundException {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         return repository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
     }

@@ -47,7 +47,27 @@ public class UserController {
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser) {
+
         service.changePassword(request, connectedUser);
-        return ResponseEntity.ok().build();
+        Response<?> response = Response.builder()
+                .status(HttpStatus.OK)
+                .message("change password successful")
+                .data(null)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping(value = "reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestBody ResetPasswordRequest request,
+            Principal connectedUser) {
+
+        service.resetPassword(request, connectedUser);
+        Response<?> response = Response.builder()
+                .status(HttpStatus.OK)
+                .message("reset password successful")
+                .data(null)
+                .build();
+        return ResponseEntity.ok(response);
     }
 }

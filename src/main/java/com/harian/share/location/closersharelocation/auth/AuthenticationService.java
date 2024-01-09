@@ -2,6 +2,7 @@ package com.harian.share.location.closersharelocation.auth;
 
 import com.harian.share.location.closersharelocation.auth.dto.AuthenticationRequest;
 import com.harian.share.location.closersharelocation.auth.dto.AuthenticationResponse;
+import com.harian.share.location.closersharelocation.auth.dto.OtpAuthenticationRequest;
 import com.harian.share.location.closersharelocation.auth.dto.RegisterRequest;
 import com.harian.share.location.closersharelocation.auth.dto.RequestOtpRequest;
 import com.harian.share.location.closersharelocation.config.JwtService;
@@ -73,7 +74,6 @@ public class AuthenticationService {
                     var refreshToken = jwtService.generateRefreshToken(user);
                     saveUserToken(user, jwtToken);
                     return AuthenticationResponse.builder()
-                            .user(user)
                             .accessToken(jwtToken)
                             .refreshToken(refreshToken)
                             .build();
@@ -116,8 +116,41 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .user(user)
                 .build();
+    }
+
+    public AuthenticationResponse authenticate(OtpAuthenticationRequest request) throws UserNotFoundException {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new OtpAuthenticationException("otp authentication failed, please request otp first"));
+
+        if (request.getOtp() == null) {
+            throw new OtpAuthenticationException("otp is missing, please provide otp to register");
+        } else if (user.getOtp() == null) {
+            throw new OtpAuthenticationException("otp authentication failed, please request otp first");
+        } else {
+            if (System.currentTimeMillis() - user.getOtpRequestedTime() > Constants.OTP_VALID_TIME) {
+
+                if (passwordEncoder.matches(request.getOtp(), user.getOtp())) {
+                    user.setOtp(null);
+                    user.setOtpRequestedTime(null);
+                    userRepository.save(user);
+
+                    var jwtToken = jwtService.generateToken(user);
+                    var refreshToken = jwtService.generateRefreshToken(user);
+                    revokeAllUserTokens(user);
+                    saveUserToken(user, jwtToken);
+                    return AuthenticationResponse.builder()
+                            .accessToken(jwtToken)
+                            .refreshToken(refreshToken)
+                            .build();
+                } else {
+                    throw new OtpAuthenticationException("incorrect otp");
+                }
+            } else {
+                throw new OtpAuthenticationException("otp is expired");
+            }
+        }
+
     }
 
     private void saveUserToken(User user, String jwtToken) {
@@ -161,7 +194,6 @@ public class AuthenticationService {
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
-                        .user(user)
                         .build();
                 return authResponse;
             }

@@ -2,6 +2,7 @@ USE closerShareLocation
 USE master
 DROP DATABASE closerShareLocation
 CREATE DATABASE closerShareLocation
+CREATE DATABASE screencall
 DROP TABLE IF EXISTS _user
 DROP TABLE IF EXISTS token
 DROP TABLE IF EXISTS post
