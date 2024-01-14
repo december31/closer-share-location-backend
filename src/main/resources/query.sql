@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS user_post_likes
 
 
 
-
 SELECT * FROM _user
 SELECT * FROM post_images
 SELECT * FROM image
@@ -20,14 +19,15 @@ SELECT * FROM comment
 SELECT * FROM user_post_likes
 SELECT * FROM user_post_watches
 
+SELECT * FROM country where code = 'VN'
+
+DELETE FROM country
 
 ALTER TABLE comment
 ALTER COLUMN content ntext
 
 ALTER TABLE comment
 ADD created_time bigint
-
-
 
 
 DELETE FROM token

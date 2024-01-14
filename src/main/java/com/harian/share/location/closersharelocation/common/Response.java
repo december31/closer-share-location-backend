@@ -1,6 +1,8 @@
 package com.harian.share.location.closersharelocation.common;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -14,13 +16,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Response<T> {
-    HttpStatusCode status;
-    String message;
-    T data;
+    private HttpStatusCode status;
+    private String message;
+    private T data;
 
+    @NonNull
     @JsonIgnore
     public HttpStatusCode getStatusCode() {
-        return status;
+        if (status != null) {
+            return status;
+        } else {
+            return HttpStatus.OK;
+        }
     }
 
     public int getStatus() {
