@@ -98,7 +98,7 @@ public class PostService {
         User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
-        if(!post.getWatches().contains(user)) {
+        if (!post.getWatches().contains(user)) {
             post.getWatches().add(user);
             user.getWatchedPosts().add(post);
         }
@@ -106,10 +106,14 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public List<Post> findByPage(Integer page, Integer pageSize) {
+    public List<PostDTO> findByPage(Integer page, Integer pageSize) {
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
-        return postRepository.findAll(PageRequest.of(page, pageSize, Sort.by("createdTime").descending())).getContent();
+        List<Post> posts = postRepository.findAll(PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
+                .getContent();
+        List<PostDTO> postDTOs = posts.stream().map(post -> new PostDTO(post))
+                .collect(Collectors.toList());
+        return postDTOs;
     }
 
     public Post findById(Long id) throws PostNotFoundException {

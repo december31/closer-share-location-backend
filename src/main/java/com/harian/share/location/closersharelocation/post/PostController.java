@@ -14,9 +14,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +40,7 @@ public class PostController {
     }
 
     @PostMapping("comment")
-    public Object comment(@RequestBody Comment comment, @RequestParam("post-id") Long postId, Principal connectedUser) {
+    public Object comment(@RequestBody Comment comment, @RequestParam("id") Long postId, Principal connectedUser) {
         Response<Object> response;
         try {
             response = Response.builder()
@@ -62,7 +59,7 @@ public class PostController {
     }
 
     @PostMapping("like")
-    public ResponseEntity<?> like(@RequestParam(name = "post-id") Long postId, Principal connectedUser) {
+    public ResponseEntity<?> like(@RequestParam(name = "id") Long postId, Principal connectedUser) {
         Response<Object> response;
         try {
             PostDTO postDTO = new PostDTO(service.like(postId, connectedUser));
@@ -83,7 +80,7 @@ public class PostController {
     }
 
     @PostMapping("watch")
-    public Object watch(@RequestParam(name = "post-id") Long postId, Principal connectedUser) {
+    public Object watch(@RequestParam(name = "id") Long postId, Principal connectedUser) {
         Response<Object> response;
         try {
             PostDTO postDTO = new PostDTO(service.watch(postId, connectedUser));
@@ -106,14 +103,10 @@ public class PostController {
     @GetMapping("popular")
     public Object getPopular(@RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "page-size", required = false) Integer pageSize) {
-
-        List<PostDTO> postDTOs = service.findByPage(page, pageSize).stream().map(post -> new PostDTO(post))
-                .collect(Collectors.toList());
-
         Response<?> response = Response.builder()
                 .status(HttpStatus.OK)
                 .message(Constants.SUCCESSFUL)
-                .data(postDTOs)
+                .data(service.findByPage(page, pageSize))
                 .build();
 
         return ResponseEntity.ok(response);
