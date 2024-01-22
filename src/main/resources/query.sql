@@ -7,6 +7,8 @@ DROP TABLE IF EXISTS token
 DROP TABLE IF EXISTS post
 DROP TABLE IF EXISTS comment
 DROP TABLE IF EXISTS user_post_likes
+DROP TABLE IF EXISTS country
+DROP TABLE IF EXISTS city
 
 
 
@@ -19,9 +21,9 @@ SELECT * FROM comment
 SELECT * FROM user_post_likes
 SELECT * FROM user_post_watches
 
-SELECT * FROM country where code = 'VN'
+SELECT * FROM country
+SELECT * FROM city
 
-DELETE FROM country
 
 ALTER TABLE comment
 ALTER COLUMN content ntext
@@ -32,3 +34,5 @@ ADD created_time bigint
 
 DELETE FROM token
 DELETE FROM _user where id = 2
+DELETE FROM country
+DELETE FROM city

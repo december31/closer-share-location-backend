@@ -79,34 +79,34 @@ public class User implements UserDetails {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_post_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
     private Set<Post> likedPosts;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_post_watches", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
     private Set<Post> watchedPosts;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_image_likes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "image_id"))
     private Set<Image> likedImages;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<Post> ownedPosts;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<Comment> comments;
 
     @Override

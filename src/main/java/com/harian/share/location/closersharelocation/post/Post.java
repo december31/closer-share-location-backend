@@ -43,7 +43,7 @@ public class Post {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private Set<Image> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,18 +53,18 @@ public class Post {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("likedPosts")
     private Set<User> likes;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "watchedPosts", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "watchedPosts", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("watchedPosts")
     private Set<User> watches;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private Set<Comment> comments;
 }

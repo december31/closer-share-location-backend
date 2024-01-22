@@ -2,8 +2,6 @@ package com.harian.share.location.closersharelocation.post.image;
 
 import java.util.Set;
 
-import org.apache.commons.lang3.builder.ToStringExclude;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.post.Post;
@@ -38,12 +36,12 @@ public class Image {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "image", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
     private Set<Comment> comments;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "likedImages", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "likedImages", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("likedImages")
     private Set<User> likes;
 
