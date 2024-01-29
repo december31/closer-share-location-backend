@@ -8,8 +8,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import com.harian.share.location.closersharelocation.exception.ImageNotFoundException;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
 import com.harian.share.location.closersharelocation.post.comment.CommentRepository;
-import com.harian.share.location.closersharelocation.user.User;
-import com.harian.share.location.closersharelocation.user.UserRepository;
+import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

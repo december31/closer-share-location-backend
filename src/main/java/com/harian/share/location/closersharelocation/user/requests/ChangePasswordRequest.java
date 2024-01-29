@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.user;
+package com.harian.share.location.closersharelocation.user.requests;
 
 import lombok.Builder;
 import lombok.Getter;

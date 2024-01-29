@@ -61,6 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Bad credentials");
         }
         filterChain.doFilter(request, response);

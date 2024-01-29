@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.user;
+package com.harian.share.location.closersharelocation.user.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -6,6 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
+import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.repository.UserRepository;
+import com.harian.share.location.closersharelocation.user.requests.ChangePasswordRequest;
+import com.harian.share.location.closersharelocation.user.requests.ResetPasswordRequest;
 
 import java.security.Principal;
 

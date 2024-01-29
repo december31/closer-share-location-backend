@@ -14,8 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import com.harian.share.location.closersharelocation.user.Permission;
-import com.harian.share.location.closersharelocation.user.Role;
+import com.harian.share.location.closersharelocation.user.model.Permission;
+import com.harian.share.location.closersharelocation.user.model.Role;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 

@@ -5,7 +5,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
 import com.harian.share.location.closersharelocation.post.image.Image;
-import com.harian.share.location.closersharelocation.user.User;
+import com.harian.share.location.closersharelocation.user.model.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

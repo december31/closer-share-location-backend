@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.user;
+package com.harian.share.location.closersharelocation.user.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,7 +47,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
 
     @Column(columnDefinition = "nvarchar(255)")
     private String name;
@@ -60,6 +60,9 @@ public class User implements UserDetails {
     private String password;
     private Long createdTime;
     private Long lastModified;
+
+    private Long latitude;
+    private Long longitude;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String otp;
@@ -108,6 +111,39 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private Set<Comment> comments;
+
+    /**
+     * friends of this user
+     */
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Friend> friends;
+    
+    /**
+     * users from whom this user is friend
+     */
+    @OneToMany(mappedBy = "friend")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Friend> friendOf;
+
+    /**
+     * friend requests of this user
+     */
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<FriendRequest> friendRequests;
+
+    /**
+     * users from whom this user send friend request
+     */
+    @OneToMany(mappedBy = "requestor")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    private Set<FriendRequest> friendRequestOf;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

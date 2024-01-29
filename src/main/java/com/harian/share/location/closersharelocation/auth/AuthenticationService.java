@@ -13,8 +13,8 @@ import com.harian.share.location.closersharelocation.exception.UserNotFoundExcep
 import com.harian.share.location.closersharelocation.token.Token;
 import com.harian.share.location.closersharelocation.token.TokenRepository;
 import com.harian.share.location.closersharelocation.token.TokenType;
-import com.harian.share.location.closersharelocation.user.User;
-import com.harian.share.location.closersharelocation.user.UserRepository;
+import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 import com.harian.share.location.closersharelocation.utils.Constants;
 
 import jakarta.mail.MessagingException;

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.post.Post;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
-import com.harian.share.location.closersharelocation.user.User;
+import com.harian.share.location.closersharelocation.user.model.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.harian.share.location.closersharelocation.user.UserRepository;
+import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 
 @Configuration
 @EnableWebMvc

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
-import com.harian.share.location.closersharelocation.user.User;
-import com.harian.share.location.closersharelocation.user.UserRepository;
+import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

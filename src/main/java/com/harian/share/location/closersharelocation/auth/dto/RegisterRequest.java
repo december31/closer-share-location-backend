@@ -1,7 +1,7 @@
 package com.harian.share.location.closersharelocation.auth.dto;
 
-import com.harian.share.location.closersharelocation.user.Gender;
-import com.harian.share.location.closersharelocation.user.Role;
+import com.harian.share.location.closersharelocation.user.model.Gender;
+import com.harian.share.location.closersharelocation.user.model.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

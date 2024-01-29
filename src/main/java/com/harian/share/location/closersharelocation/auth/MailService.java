@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.harian.share.location.closersharelocation.user.User;
+import com.harian.share.location.closersharelocation.user.model.User;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
