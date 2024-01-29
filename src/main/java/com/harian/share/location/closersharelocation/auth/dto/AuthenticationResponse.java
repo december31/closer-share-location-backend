@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.auth;
+package com.harian.share.location.closersharelocation.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
-
   @JsonProperty("access_token")
   private String accessToken;
   @JsonProperty("refresh_token")

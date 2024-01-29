@@ -33,3 +33,5 @@ build/
 .vscode/
 
 run.bat
+publish.bat
+deploy.bat

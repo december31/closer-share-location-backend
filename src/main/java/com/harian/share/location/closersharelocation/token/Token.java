@@ -1,6 +1,6 @@
 package com.harian.share.location.closersharelocation.token;
 
-import com.harian.share.location.closersharelocation.user.User;
+import com.harian.share.location.closersharelocation.user.model.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ public class Token {
 
   @Id
   @GeneratedValue
-  public Integer id;
+  public Long id;
 
   @Column(unique = true)
   public String token;

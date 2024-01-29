@@ -11,12 +11,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.harian.share.location.closersharelocation.user.UserRepository;
+import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 
 @Configuration
+@EnableWebMvc
 @RequiredArgsConstructor
-public class ApplicationConfig {
+public class ApplicationConfig implements WebMvcConfigurer {
 
   private final UserRepository repository;
 
@@ -44,4 +48,10 @@ public class ApplicationConfig {
     return new BCryptPasswordEncoder();
   }
 
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry
+        .addResourceHandler("/**")
+        .addResourceLocations("file:///D:/CloserShareLocation/");
+  }
 }

@@ -5,6 +5,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
+import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.repository.UserRepository;
+import com.harian.share.location.closersharelocation.user.requests.ChangePasswordRequest;
+import com.harian.share.location.closersharelocation.user.requests.ResetPasswordRequest;
+
 import java.security.Principal;
 
 @Service
@@ -13,6 +19,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -31,5 +38,18 @@ public class UserService {
 
         // save the new password
         repository.save(user);
+    }
+
+    public UserDTO resetPassword(ResetPasswordRequest request, Principal connectedUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        // update the password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        // save the new password
+        return new UserDTO(repository.save(user));
+    }
+
+    public User getUserInformation(Principal connectedUser) throws UserNotFoundException {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        return repository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }
