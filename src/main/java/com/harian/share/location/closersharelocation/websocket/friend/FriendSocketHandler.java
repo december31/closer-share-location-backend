@@ -23,7 +23,7 @@ public class FriendSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         sessions.remove(session);
     }
-    
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
@@ -39,6 +39,7 @@ public class FriendSocketHandler extends AbstractWebSocketHandler {
                 TextMessage textMessage = new TextMessage("you got a friend request from " + friendRequest.getRequestor().getName());
                 receiverSession.sendMessage(textMessage);
             }
+            session.sendMessage(new TextMessage("success"));
         }catch(Exception e) {
             e.printStackTrace();
         }

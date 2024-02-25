@@ -115,23 +115,24 @@ public class User implements UserDetails {
     /**
      * friends of this user
      */
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Friend> friends;
-    
+
     /**
      * users from whom this user is friend
      */
-    @OneToMany(mappedBy = "friend")
+    @OneToMany(mappedBy = "friend", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<Friend> friendOf;
 
     /**
      * friend requests of this user
      */
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<FriendRequest> friendRequests;
@@ -139,7 +140,7 @@ public class User implements UserDetails {
     /**
      * users from whom this user send friend request
      */
-    @OneToMany(mappedBy = "requestor")
+    @OneToMany(mappedBy = "requestor", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
