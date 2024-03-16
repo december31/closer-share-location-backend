@@ -1,5 +1,6 @@
 package com.harian.share.location.closersharelocation.user.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -115,15 +116,16 @@ public class User implements UserDetails {
     /**
      * friends of this user
      */
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<Friend> friends;
 
     /**
      * users from whom this user is friend
      */
-    @OneToMany(mappedBy = "friend", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "friend", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
@@ -132,7 +134,7 @@ public class User implements UserDetails {
     /**
      * friend requests of this user
      */
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<FriendRequest> friendRequests;
@@ -140,10 +142,9 @@ public class User implements UserDetails {
     /**
      * users from whom this user send friend request
      */
-    @OneToMany(mappedBy = "requestor", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "requestor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     private Set<FriendRequest> friendRequestOf;
 
     @Override

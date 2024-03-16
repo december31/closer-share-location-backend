@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.harian.share.location.closersharelocation.post.comment.CommentDTO;
-import com.harian.share.location.closersharelocation.user.UserDTO;
+import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 
 import lombok.Data;
 

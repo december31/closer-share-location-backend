@@ -1,6 +1,6 @@
 package com.harian.share.location.closersharelocation.post.comment;
 
-import com.harian.share.location.closersharelocation.user.UserDTO;
+import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

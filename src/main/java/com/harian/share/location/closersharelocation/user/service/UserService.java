@@ -1,4 +1,4 @@
-package com.harian.share.location.closersharelocation.user;
+package com.harian.share.location.closersharelocation.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 import com.harian.share.location.closersharelocation.user.requests.ChangePasswordRequest;
 import com.harian.share.location.closersharelocation.user.requests.ResetPasswordRequest;
@@ -48,8 +49,8 @@ public class UserService {
         return new UserDTO(repository.save(user));
     }
 
-    public User getUserInformation(Principal connectedUser) throws UserNotFoundException {
+    public UserDTO getUserInformation(Principal connectedUser) throws UserNotFoundException {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-        return repository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return UserDTO.fromUser(repository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found")));
     }
 }

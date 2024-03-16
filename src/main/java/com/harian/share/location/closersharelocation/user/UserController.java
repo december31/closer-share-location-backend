@@ -14,9 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.harian.share.location.closersharelocation.common.Response;
+import com.harian.share.location.closersharelocation.exception.FriendRequestAlreadyExistedException;
+import com.harian.share.location.closersharelocation.exception.FriendRequestNotExistedException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
+import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.requests.ChangePasswordRequest;
 import com.harian.share.location.closersharelocation.user.requests.ResetPasswordRequest;
+import com.harian.share.location.closersharelocation.user.service.FriendService;
+import com.harian.share.location.closersharelocation.user.service.UserService;
 
 import java.security.Principal;
 
@@ -25,7 +30,8 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService service;
+    private final UserService userService;
+    private final FriendService friendService;
 
     @CrossOrigin
     @GetMapping
@@ -35,11 +41,74 @@ public class UserController {
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message("successful")
-                    .data(service.getUserInformation(connectedUser))
+                    .data(userService.getUserInformation(connectedUser))
                     .build();
         } catch (UserNotFoundException e) {
             response = Response.builder()
                     .status(HttpStatus.OK)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+
+    @PostMapping("friend/request")
+    public ResponseEntity<?> createFriendRequest(@RequestBody User friend, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(friendService.createFriendRequest(friend, connectedUser))
+                    .build();
+        } catch (UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        } catch (FriendRequestAlreadyExistedException e) {
+            response = Response.builder()
+                    .status(HttpStatus.CONFLICT)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+
+    @PostMapping("friend/accept")
+    public ResponseEntity<?> acceptFriendRequest(@RequestBody User requestor, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(friendService.acceptFriendRequest(requestor, connectedUser))
+                    .build();
+        } catch (UserNotFoundException | FriendRequestNotExistedException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+
+    @PostMapping("friend/deny")
+    public ResponseEntity<?> denyFriendRequest(@RequestBody User requestor, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(friendService.denyFriendRequest(requestor, connectedUser))
+                    .build();
+        } catch (UserNotFoundException | FriendRequestNotExistedException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
                     .message(e.getMessage())
                     .data(null)
                     .build();
@@ -52,7 +121,7 @@ public class UserController {
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser) {
 
-        service.changePassword(request, connectedUser);
+        userService.changePassword(request, connectedUser);
         Response<?> response = Response.builder()
                 .status(HttpStatus.OK)
                 .message("change password successful")
@@ -66,7 +135,7 @@ public class UserController {
             @RequestBody ResetPasswordRequest request,
             Principal connectedUser) {
 
-        service.resetPassword(request, connectedUser);
+        userService.resetPassword(request, connectedUser);
         Response<?> response = Response.builder()
                 .status(HttpStatus.OK)
                 .message("reset password successful")

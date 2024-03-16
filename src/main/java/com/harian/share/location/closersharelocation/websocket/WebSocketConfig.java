@@ -7,9 +7,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.harian.share.location.closersharelocation.websocket.friend.FriendSocketHandler;
-import com.harian.share.location.closersharelocation.websocket.location.LocationSocketHandler;
-
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -18,18 +15,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final LocationSocketHandler locationSocketHandler;
-    private final FriendSocketHandler friendSocketHandler;
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/message");
+        registry.addEndpoint("/websocket/v1");
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/topic", "queue");
+        registry.enableSimpleBroker("/topic");
+        registry.setApplicationDestinationPrefixes("/app", "/topic");
     }
-
 }

@@ -29,8 +29,6 @@ SELECT * FROM city
 
 SELECT * FROM friend_request WHERE friend_request.user_id = 2
 
-DELETE FROM friend_request
-
 ALTER TABLE comment
 ALTER COLUMN content ntext
 
@@ -42,3 +40,4 @@ DELETE FROM token
 DELETE FROM _user where id = 2
 DELETE FROM country
 DELETE FROM city
+DELETE FROM friend_request

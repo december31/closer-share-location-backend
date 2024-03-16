@@ -12,6 +12,7 @@ public class MessageController {
     @MessageMapping("/greeting")
     public String String(@RequestParam String greeting) {
         String text = "[" + System.currentTimeMillis() + "]:" + greeting;
+        System.out.println("got a socket message: " + greeting);
         return text;
     }
 
