@@ -54,4 +54,8 @@ public class PostDTO {
             post.setWatches(Set.of());
         this.watches = post.getWatches().stream().map(user -> new UserDTO(user)).collect(Collectors.toSet());
     }
+
+    public static PostDTO fromPost(Post post) {
+        return new PostDTO(post);
+    }
 }

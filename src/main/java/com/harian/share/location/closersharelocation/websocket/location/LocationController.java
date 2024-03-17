@@ -16,7 +16,7 @@ public class LocationController {
 
     @MessageMapping("/location/update")
     @SendTo("/topic/location/subscribe")
-    public String updateLocation(@RequestParam String location) {
+    public Location updateLocation(@RequestParam Location location) {
         System.out.println("got location" + location);
         return location;
     }

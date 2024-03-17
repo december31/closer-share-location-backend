@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
+import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
 import com.harian.share.location.closersharelocation.utils.Constants;
 
@@ -31,11 +32,20 @@ public class PostController {
     @PostMapping(value = "create", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public Object create(HttpServletRequest request, Principal connectedUser)
             throws IOException, ServletException {
-        Response<?> response = Response.builder()
-                .status(HttpStatus.OK)
-                .message("create post successful")
-                .data(new PostDTO(service.create(request, connectedUser)))
-                .build();
+        Response<?> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("create post successful")
+                    .data(service.create(request, connectedUser))
+                    .build();
+        } catch (IOException | ServletException | UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
         return ResponseEntity.ok(response);
     }
 

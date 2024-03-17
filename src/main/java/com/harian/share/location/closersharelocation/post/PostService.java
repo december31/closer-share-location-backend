@@ -10,11 +10,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
+import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
+import com.harian.share.location.closersharelocation.utils.Utils;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,18 +39,22 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
+    private final Utils utils;
 
-    public Post create(HttpServletRequest request, Principal connectedUser) throws IOException, ServletException {
+    public PostDTO create(HttpServletRequest request, Principal connectedUser)
+            throws IOException, ServletException, UserNotFoundException {
         ObjectMapper mapper = new ObjectMapper();
 
-        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        User user = utils.getUserFromPrincipal(connectedUser)
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
+                
         Post post = mapper.readValue(request.getParameter("post"), Post.class);
         post.setOwner(user);
         post.setCreatedTime(System.currentTimeMillis());
         post.setLastModified(System.currentTimeMillis());
         post = postRepository.save(post);
         saveImages(post, request, user);
-        return post;
+        return PostDTO.fromPost(post);
     }
 
     private void saveImages(Post post, HttpServletRequest request, User user) throws IOException, ServletException {
