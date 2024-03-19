@@ -74,6 +74,7 @@ public class FriendService {
                 .orElseThrow(() -> new FriendRequestNotExistedException("this friend request no longer existed"));
         friendRequest.setStatus(FriendRequest.Status.ACCEPTED);
         user.getFriends().add(new Friend(user, requestor, System.currentTimeMillis()));
+        requestor.getFriends().add(new Friend(requestor, user, System.currentTimeMillis()));
         return UserDTO.fromUser(userRepository.save(user));
     }
 

@@ -65,6 +65,11 @@ public class UserService {
                 repository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found")));
     }
 
+    public UserDTO getUserInformation(Long userId) throws UserNotFoundException {
+        return UserDTO.fromUser(
+                repository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found")));
+    }
+
     public List<UserDTO> getFriends(Principal connectedUser, Integer page, Integer pageSize)
             throws UserNotFoundException {
         User user = utils.getUserFromPrincipal(connectedUser)
@@ -78,8 +83,32 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserDTO> getFriends(Long userId, Integer page, Integer pageSize)
+            throws UserNotFoundException {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
+        page = page == null ? 0 : page;
+        pageSize = pageSize == null ? 6 : pageSize;
+        return user.getFriends().stream()
+                .skip(page * pageSize)
+                .limit(pageSize)
+                .map(friend -> UserDTO.fromUser(friend.getFriend()))
+                .collect(Collectors.toList());
+    }
+
     public List<PostDTO> getPost(Principal connectedUser, Integer page, Integer pageSize) throws UserNotFoundException {
         User user = utils.getUserFromPrincipal(connectedUser)
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
+        page = page == null ? 0 : page;
+        pageSize = pageSize == null ? 10 : pageSize;
+        return postRepository.findByOwner(user, PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
+                .getContent().stream()
+                .map(post -> PostDTO.fromPost(post))
+                .collect(Collectors.toList());
+    }
+
+    public List<PostDTO> getPost(Long userId, Integer page, Integer pageSize) throws UserNotFoundException {
+        User user = repository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;

@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class Location {
-    private Long userId;
-    private Long latitude;
-    private Long longitude;
+    private Double latitude;
+    private Double longitude;
 }

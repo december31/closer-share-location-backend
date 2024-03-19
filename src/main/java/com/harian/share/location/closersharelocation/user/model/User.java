@@ -62,8 +62,8 @@ public class User implements UserDetails {
     private Long createdTime;
     private Long lastModified;
 
-    private Long latitude;
-    private Long longitude;
+    private Double latitude;
+    private Double longitude;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String otp;
@@ -116,7 +116,7 @@ public class User implements UserDetails {
     /**
      * friends of this user
      */
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
@@ -146,6 +146,11 @@ public class User implements UserDetails {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<FriendRequest> friendRequestOf;
+
+    @JsonIgnore
+    public String getLocationSubscribeSocketEndPoint() {
+        return "/topic/location/subscribe/" + id;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

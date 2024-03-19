@@ -40,4 +40,5 @@ DELETE FROM token
 DELETE FROM _user where id = 2
 DELETE FROM country
 DELETE FROM city
+DELETE FROM friend
 DELETE FROM friend_request

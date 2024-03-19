@@ -1,8 +1,5 @@
 package com.harian.share.location.closersharelocation.user.model.dto;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.harian.share.location.closersharelocation.user.model.Gender;
 import com.harian.share.location.closersharelocation.user.model.User;
 
@@ -22,8 +19,10 @@ public class UserDTO {
     private String avatar;
     private String email;
     private Gender gender;
-    private Set<FriendRequestDTO> friendRequests;
-    private Set<FriendDTO> friends;
+    private Double latitude;
+    private Double longitude;
+    // private Set<FriendRequestDTO> friendRequests;
+    // private Set<FriendDTO> friends;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -32,10 +31,12 @@ public class UserDTO {
         this.avatar = user.getAvatar();
         this.email = user.getEmail();
         this.gender = user.getGender();
-        this.friendRequests = user.getFriendRequests().stream()
-                .map(friendRequest -> FriendRequestDTO.fromFriendRequest(friendRequest)).collect(Collectors.toSet());
-        this.friends = user.getFriends().stream()
-                .map(friend -> FriendDTO.fromFriend(friend)).collect(Collectors.toSet());
+        this.latitude = user.getLatitude();
+        this.longitude = user.getLongitude();
+        // this.friendRequests = user.getFriendRequests().stream()
+        //         .map(friendRequest -> FriendRequestDTO.fromFriendRequest(friendRequest)).collect(Collectors.toSet());
+        // this.friends = user.getFriends().stream()
+        //         .map(friend -> FriendDTO.fromFriend(friend)).collect(Collectors.toSet());
     }
 
     public static UserDTO fromUser(User user) {

@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +33,6 @@ public class UserController {
     private final UserService userService;
     private final FriendService friendService;
 
-    @CrossOrigin
     @GetMapping
     public ResponseEntity<?> getUserInformation(Principal connectedUser) {
         Response<Object> response;
@@ -42,6 +41,69 @@ public class UserController {
                     .status(HttpStatus.OK)
                     .message("successful")
                     .data(userService.getUserInformation(connectedUser))
+                    .build();
+        } catch (UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> getUserInformation(@PathVariable(name = "id") Long userId) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(userService.getUserInformation(userId))
+                    .build();
+        } catch (UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+
+    @GetMapping("{id}/friends")
+    public ResponseEntity<?> getUserFriends(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "page-size", required = false) Integer pageSize,
+            @PathVariable(name = "id") Long userId) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(userService.getFriends(userId, page, pageSize))
+                    .build();
+        } catch (UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+    
+    @GetMapping("{id}/posts")
+    public ResponseEntity<?> getUserPosts(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "page-size", required = false) Integer pageSize,
+            @PathVariable(name = "id") Long userId) {
+                Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(userService.getPost(userId, page, pageSize))
                     .build();
         } catch (UserNotFoundException e) {
             response = Response.builder()

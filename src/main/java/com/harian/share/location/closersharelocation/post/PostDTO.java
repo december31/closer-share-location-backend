@@ -24,7 +24,7 @@ public class PostDTO {
     private String content;
     private Long createdTime;
     private Long lastModified;
-    private User owner;
+    private UserDTO owner;
     private Set<ImageDTO> images;
     private Set<CommentDTO> comments;
     private Set<UserDTO> likes;
@@ -36,7 +36,7 @@ public class PostDTO {
         this.content = post.getContent();
         this.createdTime = post.getCreatedTime();
         this.lastModified = post.getLastModified();
-        this.owner = post.getOwner();
+        this.owner = UserDTO.fromUser(post.getOwner());
 
         if (post.getImages() != null) {
             this.images = post.getImages().stream().map(image -> new ImageDTO(image)).collect(Collectors.toSet());
