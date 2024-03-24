@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.post.PostDTO;
 import com.harian.share.location.closersharelocation.post.PostRepository;
+import com.harian.share.location.closersharelocation.user.model.Friend;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
@@ -56,18 +57,28 @@ public class UserService {
         // update the password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         // save the new password
-        return new UserDTO(repository.save(user));
+        return UserDTO.fromUser(repository.save(user));
     }
 
     public UserDTO getUserInformation(Principal connectedUser) throws UserNotFoundException {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         return UserDTO.fromUser(
-                repository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found")));
+                repository.findByEmail(user.getEmail())
+                        .orElseThrow(() -> new UserNotFoundException("User not found")));
     }
 
-    public UserDTO getUserInformation(Long userId) throws UserNotFoundException {
-        return UserDTO.fromUser(
-                repository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found")));
+    public UserDTO getUserInformation(Long userId, Principal connectedUser) throws UserNotFoundException {
+        User currentUser = utils.getUserFromPrincipal(connectedUser)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = repository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Friend friend = currentUser.getFriends().stream().filter(f -> f.getFriend().getId() == user.getId())
+                .findFirst()
+                .orElse(null);
+
+        UserDTO userDto = UserDTO.fromUser(user, user.getId() == currentUser.getId() ? null : friend != null);
+
+        return userDto;
     }
 
     public List<UserDTO> getFriends(Principal connectedUser, Integer page, Integer pageSize)
@@ -96,12 +107,14 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<PostDTO> getPost(Principal connectedUser, Integer page, Integer pageSize) throws UserNotFoundException {
+    public List<PostDTO> getPost(Principal connectedUser, Integer page, Integer pageSize)
+            throws UserNotFoundException {
         User user = utils.getUserFromPrincipal(connectedUser)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
-        return postRepository.findByOwner(user, PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
+        return postRepository
+                .findByOwner(user, PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
                 .getContent().stream()
                 .map(post -> PostDTO.fromPost(post))
                 .collect(Collectors.toList());
@@ -112,7 +125,8 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
-        return postRepository.findByOwner(user, PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
+        return postRepository
+                .findByOwner(user, PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
                 .getContent().stream()
                 .map(post -> PostDTO.fromPost(post))
                 .collect(Collectors.toList());

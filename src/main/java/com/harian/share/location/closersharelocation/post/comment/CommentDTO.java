@@ -20,7 +20,7 @@ public class CommentDTO {
     public CommentDTO(Comment comment) {
         this.id = comment.getId(); 
         this.content = comment.getContent();
-        this.owner = new UserDTO(comment.getOwner());
+        this.owner = UserDTO.fromUser(comment.getOwner());
         this.createdTime = comment.getCreatedTime();
     }
 }

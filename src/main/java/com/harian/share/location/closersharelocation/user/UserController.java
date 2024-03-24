@@ -53,13 +53,13 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getUserInformation(@PathVariable(name = "id") Long userId) {
+    public ResponseEntity<?> getUserInformation(@PathVariable(name = "id") Long userId, Principal connectedUser) {
         Response<Object> response;
         try {
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message("successful")
-                    .data(userService.getUserInformation(userId))
+                    .data(userService.getUserInformation(userId, connectedUser))
                     .build();
         } catch (UserNotFoundException e) {
             response = Response.builder()

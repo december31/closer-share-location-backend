@@ -25,7 +25,7 @@ public class ImageDTO {
         }
 
         if (image.getLikes() != null) {
-            this.likes = image.getLikes().stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
+            this.likes = image.getLikes().stream().map(user -> UserDTO.fromUser(user)).collect(Collectors.toList());
         }
     }
 }

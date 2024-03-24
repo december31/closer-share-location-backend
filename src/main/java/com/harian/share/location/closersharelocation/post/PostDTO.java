@@ -48,11 +48,11 @@ public class PostDTO {
 
         if (post.getLikes() == null)
             post.setLikes(Set.of());
-        this.likes = post.getLikes().stream().map(user -> new UserDTO(user)).collect(Collectors.toSet());
+        this.likes = post.getLikes().stream().map(user -> UserDTO.fromUser(user)).collect(Collectors.toSet());
 
         if (post.getWatches() == null)
             post.setWatches(Set.of());
-        this.watches = post.getWatches().stream().map(user -> new UserDTO(user)).collect(Collectors.toSet());
+        this.watches = post.getWatches().stream().map(user -> UserDTO.fromUser(user)).collect(Collectors.toSet());
     }
 
     public static PostDTO fromPost(Post post) {

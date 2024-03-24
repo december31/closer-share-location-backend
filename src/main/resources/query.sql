@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS friend
 
 
 
-SELECT * FROM _user
+SELECT TOP(1000) * FROM _user
 SELECT * FROM post_images
 SELECT * FROM image
 SELECT token FROM token

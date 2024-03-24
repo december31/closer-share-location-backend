@@ -1,5 +1,6 @@
 package com.harian.share.location.closersharelocation.user.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.harian.share.location.closersharelocation.user.model.Gender;
 import com.harian.share.location.closersharelocation.user.model.User;
 
@@ -21,10 +22,11 @@ public class UserDTO {
     private Gender gender;
     private Double latitude;
     private Double longitude;
-    // private Set<FriendRequestDTO> friendRequests;
-    // private Set<FriendDTO> friends;
 
-    public UserDTO(User user) {
+    @JsonProperty("is-friend")
+    private Boolean isFriend;
+
+    public UserDTO(User user, Boolean isFriend) {
         this.id = user.getId();
         this.name = user.getName();
         this.description = user.getDescription();
@@ -33,13 +35,14 @@ public class UserDTO {
         this.gender = user.getGender();
         this.latitude = user.getLatitude();
         this.longitude = user.getLongitude();
-        // this.friendRequests = user.getFriendRequests().stream()
-        //         .map(friendRequest -> FriendRequestDTO.fromFriendRequest(friendRequest)).collect(Collectors.toSet());
-        // this.friends = user.getFriends().stream()
-        //         .map(friend -> FriendDTO.fromFriend(friend)).collect(Collectors.toSet());
+        this.isFriend = isFriend;
+    }
+
+    public static UserDTO fromUser(User user, Boolean isFriend) {
+        return new UserDTO(user, isFriend);
     }
 
     public static UserDTO fromUser(User user) {
-        return new UserDTO(user);
+        return new UserDTO(user, null);
     }
 }
