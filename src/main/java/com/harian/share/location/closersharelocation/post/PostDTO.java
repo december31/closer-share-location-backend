@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import com.harian.share.location.closersharelocation.post.comment.CommentDTO;
 import com.harian.share.location.closersharelocation.post.image.ImageDTO;
-import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 
 import lombok.AllArgsConstructor;

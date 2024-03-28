@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
 import com.harian.share.location.closersharelocation.user.model.User;
@@ -20,10 +21,19 @@ public class LocationService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final UserRepository userRepository;
+    private final SimpUserRegistry userRegistry;
     private final Utils utils;
 
     public void updateLocation(Location location, Principal connectedUser) {
         User user = utils.getUserFromPrincipal(connectedUser).orElse(null);
+        System.out.println("===========================");
+        userRegistry.findSubscriptions(it -> true).forEach( sub -> {
+            System.out.println(sub.getDestination() + " -- " + sub.getId());
+        });
+        
+        userRegistry.getUsers().forEach(u -> {
+            System.out.println(u.getName());
+        });
         if (user != null) {
             user.setLatitude(location.getLatitude());
             user.setLongitude(location.getLongitude());

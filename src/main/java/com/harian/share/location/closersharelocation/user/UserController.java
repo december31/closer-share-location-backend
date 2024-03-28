@@ -254,7 +254,7 @@ public class UserController {
         return null;
     }
 
-    @PostMapping("friend/requests")
+    @GetMapping("friend/requests")
     public ResponseEntity<?> getFriendRequest(Principal connectedUser, @RequestParam(name = "id") Long id) {
         return null;
     }
