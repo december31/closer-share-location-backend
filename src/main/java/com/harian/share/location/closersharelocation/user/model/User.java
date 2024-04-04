@@ -147,6 +147,11 @@ public class User implements UserDetails {
     @EqualsAndHashCode.Exclude
     private Set<FriendRequest> friendRequestOf;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Device> devices;
+
     @JsonIgnore
     public String getLocationSubscribeSocketEndPoint() {
         return "/topic/location/subscribe/" + id;

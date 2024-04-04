@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS user_post_likes
 DROP TABLE IF EXISTS country
 DROP TABLE IF EXISTS city
 DROP TABLE IF EXISTS friend
+DROP TABLE IF EXISTS device
 
 
 
@@ -25,6 +26,7 @@ SELECT * FROM friend
 SELECT * FROM friend_request
 SELECT * FROM country
 SELECT * FROM city
+SELECT * FROM device
 
 
 SELECT * FROM friend_request WHERE friend_request.user_id = 2

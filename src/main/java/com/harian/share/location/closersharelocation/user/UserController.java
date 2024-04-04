@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,9 @@ import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.FriendRequestAlreadyExistedException;
 import com.harian.share.location.closersharelocation.exception.FriendRequestNotExistedException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
+import com.harian.share.location.closersharelocation.user.model.Device;
 import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.model.dto.DeviceDTO;
 import com.harian.share.location.closersharelocation.user.requests.ChangePasswordRequest;
 import com.harian.share.location.closersharelocation.user.requests.ResetPasswordRequest;
 import com.harian.share.location.closersharelocation.user.service.FriendService;
@@ -92,13 +95,13 @@ public class UserController {
         }
         return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
     }
-    
+
     @GetMapping("{id}/posts")
     public ResponseEntity<?> getUserPosts(
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "page-size", required = false) Integer pageSize,
             @PathVariable(name = "id") Long userId) {
-                Response<Object> response;
+        Response<Object> response;
         try {
             response = Response.builder()
                     .status(HttpStatus.OK)
@@ -184,6 +187,21 @@ public class UserController {
         return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
     }
 
+    @PostMapping("token-authenticate")
+    public ResponseEntity<?> tokenAuthenticate(Principal connectedUser) {
+        Response<?> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(userService.getUserInformation(connectedUser))
+                    .build();
+        } catch (UserNotFoundException e) {
+            throw new BadCredentialsException("Bad credentials");
+        }
+        return new ResponseEntity<Response<?>>(response, response.getStatusCode());
+    }
+
     @PostMapping("friend/accept")
     public ResponseEntity<?> acceptFriendRequest(@RequestBody User requestor, Principal connectedUser) {
         Response<Object> response;
@@ -257,5 +275,34 @@ public class UserController {
     @GetMapping("friend/requests")
     public ResponseEntity<?> getFriendRequest(Principal connectedUser, @RequestParam(name = "id") Long id) {
         return null;
+    }
+
+    @PostMapping("device/update")
+    public ResponseEntity<?> updateDevices(@RequestBody Device device, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(userService.updateDevice(device, connectedUser))
+                    .build();
+                } catch (UserNotFoundException e) {
+                    response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+    
+    @GetMapping("test/device")
+    public ResponseEntity<?> getDevices(Principal connectedUser) throws UserNotFoundException {
+        Response<Object> response = Response.builder()
+                .status(HttpStatus.OK)
+                .message("successful")
+                .data(userService.getDevices(connectedUser))
+                .build();
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
     }
 }
