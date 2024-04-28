@@ -13,8 +13,11 @@ import com.harian.share.location.closersharelocation.post.PostDTO;
 import com.harian.share.location.closersharelocation.post.PostRepository;
 import com.harian.share.location.closersharelocation.user.model.Device;
 import com.harian.share.location.closersharelocation.user.model.Friend;
+import com.harian.share.location.closersharelocation.user.model.FriendRequest;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.model.dto.DeviceDTO;
+import com.harian.share.location.closersharelocation.user.model.dto.FriendDTO;
+import com.harian.share.location.closersharelocation.user.model.dto.FriendsResponse;
 import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 import com.harian.share.location.closersharelocation.user.repository.DeviceRepository;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
@@ -84,17 +87,21 @@ public class UserService {
         return userDto;
     }
 
-    public List<UserDTO> getFriends(Principal connectedUser, Integer page, Integer pageSize)
+    public FriendsResponse getFriends(Principal connectedUser, Integer page, Integer pageSize)
             throws UserNotFoundException {
         User user = getUserFromPrincipal(connectedUser)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 6 : pageSize;
-        return user.getFriends().stream()
-                .skip(page * pageSize)
-                .limit(pageSize)
-                .map(friend -> UserDTO.fromUser(friend.getFriend()))
-                .collect(Collectors.toList());
+        FriendsResponse friendsResponse = FriendsResponse.builder()
+                .count(user.getFriends().size())
+                .friends(user.getFriends().stream()
+                        .skip(page * pageSize)
+                        .limit(pageSize)
+                        .map(friend -> FriendDTO.fromFriend(friend))
+                        .collect(Collectors.toList()))
+                .build();
+        return friendsResponse;
     }
 
     public List<UserDTO> getFriends(Long userId, Integer page, Integer pageSize)

@@ -13,6 +13,8 @@ import com.harian.share.location.closersharelocation.exception.UserNotFoundExcep
 import com.harian.share.location.closersharelocation.token.Token;
 import com.harian.share.location.closersharelocation.token.TokenRepository;
 import com.harian.share.location.closersharelocation.token.TokenType;
+import com.harian.share.location.closersharelocation.user.model.Gender;
+import com.harian.share.location.closersharelocation.user.model.Role;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 import com.harian.share.location.closersharelocation.utils.Constants;
@@ -26,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +97,7 @@ public class AuthenticationService {
                         .name(request.getName())
                         .build());
         Integer otp = mailService.sendOTP(user);
+        System.out.println(request.getEmail() + " -- otp: " + otp);
         String encodedOtp = passwordEncoder.encode(otp.toString());
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName("User" + otp);
@@ -199,5 +204,23 @@ public class AuthenticationService {
             }
         }
         throw new TokenAuthenticationException("Authentication failed");
+    }
+
+    public void initSampleData() {
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            users.add(User.builder()
+                    .name("User" + (i + 1))
+                    .email("user" + (i + 1) + "@gmail.com")
+                    .gender(Math.random() > 0.5 ? Gender.FEMALE : Gender.MALE)
+                    .description("user" + (i + 1) + "desctiontion")
+                    .password("$2a$10$maRFadNykQea2pNVdaqZhuZLjLy3/U4FM4MxwPtcq/KVnxAJpfIF2")
+                    .role(Role.USER)
+                    .avatar(("avatar/avatar" + (int) Math.ceil(Math.random() * 12) + ".png"))
+                    .createdTime(System.currentTimeMillis())
+                    .lastModified(System.currentTimeMillis())
+                    .build());
+        }
+        userRepository.saveAll(users);
     }
 }

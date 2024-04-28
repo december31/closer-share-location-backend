@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 public class FriendDTO {
-    private UserDTO friend;
+    private UserDTO information;
     private Long since;
 
     public static FriendDTO fromFriend(Friend friendRequest) {
@@ -22,7 +22,7 @@ public class FriendDTO {
                 .build();
 
         return FriendDTO.builder()
-                .friend(friend)
+                .information(friend)
                 .since(friendRequest.getSince())
                 .build();
     }

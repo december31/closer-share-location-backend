@@ -52,6 +52,6 @@ public class ApplicationConfig implements WebMvcConfigurer {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry
         .addResourceHandler("/**")
-        .addResourceLocations("file:///D:/CloserShareLocation/");
+        .addResourceLocations("file:///E:/CloserShareLocation/");
   }
 }

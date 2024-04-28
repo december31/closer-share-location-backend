@@ -59,7 +59,7 @@ public class PostService {
     private void saveImages(Post post, HttpServletRequest request, User user) throws IOException, ServletException {
         List<Part> imageParts = request.getParts().stream().filter(part -> part.getName().equals("image"))
                 .collect(Collectors.toList());
-        String absoluteFolderPath = "D:/CloserShareLocation/post/" + user.getId() + "/images";
+        String absoluteFolderPath = "E:/CloserShareLocation/post/" + user.getId() + "/images";
         String relativeFolderPath = "post/" + user.getId() + "/images";
         File folder = new File(absoluteFolderPath);
         if (!folder.exists()) {

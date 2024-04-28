@@ -149,4 +149,9 @@ public class AuthenticationController {
 		}
 		return new ResponseEntity<Response<Object>>(response, response.getStatusCode());
 	}
+
+	@PostMapping("/init-sample-data")
+	public void initsSampleData() {
+		service.initSampleData();
+	}
 }
