@@ -151,7 +151,8 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/init-sample-data")
-	public void initsSampleData() {
+	public String initsSampleData() {
 		service.initSampleData();
+		return "success";
 	}
 }

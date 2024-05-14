@@ -31,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.harian.share.location.closersharelocation.messaging.model.Message;
 import com.harian.share.location.closersharelocation.post.Post;
 import com.harian.share.location.closersharelocation.post.comment.Comment;
 import com.harian.share.location.closersharelocation.post.image.Image;
@@ -147,6 +148,16 @@ public class User implements UserDetails {
     @EqualsAndHashCode.Exclude
     private Set<FriendRequest> friendRequestOf;
 
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Message> sentMessage;
+
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Message> receivedMessage;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -155,6 +166,11 @@ public class User implements UserDetails {
     @JsonIgnore
     public String getLocationSubscribeSocketEndPoint() {
         return "/topic/location/subscribe/" + id;
+    }
+
+    @JsonIgnore
+    public String getMessageSubscribeSocketEndPoint() {
+        return "/topic/message/subscribe/" + id;
     }
 
     @Override

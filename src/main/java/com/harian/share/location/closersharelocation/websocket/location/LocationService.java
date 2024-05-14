@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
-import com.harian.share.location.closersharelocation.utils.Utils;
+import com.harian.share.location.closersharelocation.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,16 +21,16 @@ public class LocationService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final SimpUserRegistry userRegistry;
-    private final Utils utils;
 
     public void updateLocation(Location location, Principal connectedUser) {
-        User user = utils.getUserFromPrincipal(connectedUser).orElse(null);
+        User user = userService.getUserFromPrincipal(connectedUser).orElse(null);
         System.out.println("===========================");
-        userRegistry.findSubscriptions(it -> true).forEach( sub -> {
+        userRegistry.findSubscriptions(it -> true).forEach(sub -> {
             System.out.println(sub.getDestination() + " -- " + sub.getId());
         });
-        
+
         userRegistry.getUsers().forEach(u -> {
             System.out.println(u.getName());
         });

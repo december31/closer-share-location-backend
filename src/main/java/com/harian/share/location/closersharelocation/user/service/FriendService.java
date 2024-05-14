@@ -6,10 +6,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.harian.share.location.closersharelocation.exception.AlreadyFriendException;
 import com.harian.share.location.closersharelocation.exception.FriendRequestAlreadyExistedException;
 import com.harian.share.location.closersharelocation.exception.FriendRequestNotExistedException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.firebase.FirebaseCloudMessagingService;
+import com.harian.share.location.closersharelocation.firebase.model.NotificationData;
 import com.harian.share.location.closersharelocation.firebase.model.NotificationRequest;
 import com.harian.share.location.closersharelocation.user.model.Friend;
 import com.harian.share.location.closersharelocation.user.model.FriendRequest;
@@ -70,6 +72,7 @@ public class FriendService {
         try {
             firebaseService.pushNotification(NotificationRequest.builder()
                     .title("You got a friend request from " + user.getName())
+                    .data("")
                     .tokens(friend.getDevices().stream()
                             .map(device -> device.getFirebaseMessagingToken()).toList())
                     .build());
@@ -80,7 +83,7 @@ public class FriendService {
     }
 
     public UserDTO acceptFriendRequest(User _requestor, Principal connectedUser)
-            throws UserNotFoundException, FriendRequestNotExistedException {
+            throws UserNotFoundException, FriendRequestNotExistedException, AlreadyFriendException {
         User user = userService.getUserFromPrincipal(connectedUser)
                 .orElseThrow(
                         () -> new UserNotFoundException("user with email "
@@ -93,6 +96,9 @@ public class FriendService {
                 .filter(fr -> fr.getRequestor().getId() == requestor.getId()).findFirst()
                 .orElseThrow(() -> new FriendRequestNotExistedException(
                         "this friend request no longer existed"));
+        if (friendRequest.getStatus() == FriendRequest.Status.ACCEPTED) {
+            throw new AlreadyFriendException("You and " + requestor.getName() + " are already friends");
+        }
         friendRequest.setStatus(FriendRequest.Status.ACCEPTED);
         user.getFriends().add(new Friend(user, requestor, System.currentTimeMillis()));
         requestor.getFriends().add(new Friend(requestor, user, System.currentTimeMillis()));
@@ -128,6 +134,7 @@ public class FriendService {
         return user.getFriendRequests().stream()
                 .skip(page * pageSize)
                 .limit(pageSize)
+                .filter(friendRequest -> friendRequest.getStatus() == FriendRequest.Status.PENDING)
                 .map(friendRequest -> FriendRequestDTO.fromFriendRequest(friendRequest))
                 .toList();
     }

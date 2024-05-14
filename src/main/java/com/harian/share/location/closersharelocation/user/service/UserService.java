@@ -13,7 +13,6 @@ import com.harian.share.location.closersharelocation.post.PostDTO;
 import com.harian.share.location.closersharelocation.post.PostRepository;
 import com.harian.share.location.closersharelocation.user.model.Device;
 import com.harian.share.location.closersharelocation.user.model.Friend;
-import com.harian.share.location.closersharelocation.user.model.FriendRequest;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.model.dto.DeviceDTO;
 import com.harian.share.location.closersharelocation.user.model.dto.FriendDTO;
@@ -104,17 +103,21 @@ public class UserService {
         return friendsResponse;
     }
 
-    public List<UserDTO> getFriends(Long userId, Integer page, Integer pageSize)
+    public FriendsResponse getFriends(Long userId, Integer page, Integer pageSize)
             throws UserNotFoundException {
         User user = repository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 6 : pageSize;
-        return user.getFriends().stream()
-                .skip(page * pageSize)
-                .limit(pageSize)
-                .map(friend -> UserDTO.fromUser(friend.getFriend()))
-                .collect(Collectors.toList());
+        FriendsResponse friendsResponse = FriendsResponse.builder()
+                .count(user.getFriends().size())
+                .friends(user.getFriends().stream()
+                        .skip(page * pageSize)
+                        .limit(pageSize)
+                        .map(friend -> FriendDTO.fromFriend(friend))
+                        .collect(Collectors.toList()))
+                .build();
+        return friendsResponse;
     }
 
     public List<PostDTO> getPost(Principal connectedUser, Integer page, Integer pageSize)
@@ -148,7 +151,11 @@ public class UserService {
                 .orElse(null);
         if (device == null) {
             device = _device;
+            if (!user.getDevices().stream().filter(d -> d.getId() == _device.getId()).toList().isEmpty()) {
+                user.getDevices().removeIf(d -> d.getId() == _device.getId());
+            }
             user.getDevices().add(device);
+
             device.setUser(user);
             user = repository.save(user);
         } else {

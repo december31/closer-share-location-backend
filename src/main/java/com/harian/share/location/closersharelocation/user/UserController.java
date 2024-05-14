@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.harian.share.location.closersharelocation.common.Response;
+import com.harian.share.location.closersharelocation.exception.AlreadyFriendException;
 import com.harian.share.location.closersharelocation.exception.FriendRequestAlreadyExistedException;
 import com.harian.share.location.closersharelocation.exception.FriendRequestNotExistedException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
@@ -213,6 +214,12 @@ public class UserController {
         } catch (UserNotFoundException | FriendRequestNotExistedException e) {
             response = Response.builder()
                     .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        } catch (AlreadyFriendException e) {
+            response = Response.builder()
+                    .status(HttpStatus.CONFLICT)
                     .message(e.getMessage())
                     .data(null)
                     .build();

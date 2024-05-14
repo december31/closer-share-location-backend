@@ -27,31 +27,20 @@ SELECT * FROM friend_request
 SELECT * FROM country
 SELECT * FROM city
 SELECT * FROM device
-
+SELECT * FROM message
 
 SELECT * FROM friend_request WHERE friend_request.user_id = 2
 
-INSERT INTO [dbo].[_user]
-           ([id]
-           ,[avatar]
-           ,[created_time]
-           ,[description]
-           ,[email]
-           ,[gender]
-           ,[last_modified]
-           ,[latitude]
-           ,[longitude]
-           ,[name]
-           ,[otp]
-           ,[otp_requested_time]
-           ,[password]
-           ,[role])
-     VALUES
-           (3, avatar/avatar7.png, )
-GO
+SELECT * FROM message WHERE (sender_id = 1 AND receiver_id = 314) OR (sender_id = 314 AND receiver_id = 1) ORDER BY time desc
+
+DELETE FROM friend WHERE friend_id > 2 OR user_id > 2
+DELETE FROM friend_request WHERE requestor_id > 2
+DELETE FROM post WHERE user_id > 2
+DELETE FROM _user WHERE id > 2
 
 
-
+SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT) as bool
+FROM _user WHERE id = 1;
 -- ALTER TABLE comment
 -- ALTER COLUMN content ntext
 
