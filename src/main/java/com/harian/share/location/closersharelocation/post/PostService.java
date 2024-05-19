@@ -3,6 +3,7 @@ package com.harian.share.location.closersharelocation.post;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import com.harian.share.location.closersharelocation.exception.PostNotFoundExcep
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
+import com.harian.share.location.closersharelocation.user.service.UserService;
 import com.harian.share.location.closersharelocation.utils.Utils;
 
 import jakarta.servlet.ServletException;
@@ -38,6 +40,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final Utils utils;
 
     public PostDTO create(HttpServletRequest request, Principal connectedUser)
@@ -46,7 +49,7 @@ public class PostService {
 
         User user = utils.getUserFromPrincipal(connectedUser)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
-                
+
         Post post = mapper.readValue(request.getParameter("post"), Post.class);
         post.setOwner(user);
         post.setCreatedTime(System.currentTimeMillis());
@@ -121,6 +124,21 @@ public class PostService {
         List<PostDTO> postDTOs = posts.stream().map(post -> new PostDTO(post))
                 .collect(Collectors.toList());
         return postDTOs;
+    }
+
+    public List<PostDTO> searchPost(String query, Integer page, Integer pageSize, Principal connectedUser)
+            throws UserNotFoundException {
+        User user = userService.getUserFromPrincipal(connectedUser)
+                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        List<Post> posts = new ArrayList<>();
+        List<User> users = userService.searchUsers(query, page, pageSize, connectedUser);
+        posts.addAll(postRepository.findByTitleContaining(query));
+        posts.addAll(postRepository.findByContentContaining(query));
+        for (User u : users) {
+            posts.addAll(u.getOwnedPosts());
+        }
+        posts = posts.stream().distinct().limit(20).collect(Collectors.toList());
+        return posts.stream().map(post -> PostDTO.fromPost(post)).collect(Collectors.toList());
     }
 
     public Post findById(Long id) throws PostNotFoundException {

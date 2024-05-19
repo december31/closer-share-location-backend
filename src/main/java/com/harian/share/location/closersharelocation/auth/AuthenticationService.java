@@ -15,7 +15,6 @@ import com.harian.share.location.closersharelocation.post.PostRepository;
 import com.harian.share.location.closersharelocation.token.Token;
 import com.harian.share.location.closersharelocation.token.TokenRepository;
 import com.harian.share.location.closersharelocation.token.TokenType;
-import com.harian.share.location.closersharelocation.user.model.FriendRequest;
 import com.harian.share.location.closersharelocation.user.model.Gender;
 import com.harian.share.location.closersharelocation.user.model.Role;
 import com.harian.share.location.closersharelocation.user.model.User;
@@ -226,7 +225,6 @@ public class AuthenticationService {
                     .build());
         }
         List<User> savedUsers = userRepository.saveAll(users);
-        User friend = userRepository.findById(1L).orElse(null);
         savedUsers.forEach(user -> {
             Post post = Post.builder()
                     .title("Hello world!")
@@ -237,9 +235,12 @@ public class AuthenticationService {
                     .build();
             postRepository.save(post);
 
-            FriendRequest friendRequest = new FriendRequest(friend, user, System.currentTimeMillis());
-            friend.getFriendRequests().add(friendRequest);
-            userRepository.save(friend);
+            // FriendRequest friendRequest = new FriendRequest(friend, user, System.currentTimeMillis());
+            // if (friend.getFriendRequestOf() == null) {
+            //     friend.setFriendRequests(new HashSet<>());
+            // }
+            // friend.getFriendRequests().add(friendRequest);
+            // userRepository.save(friend);
         });
 
     }

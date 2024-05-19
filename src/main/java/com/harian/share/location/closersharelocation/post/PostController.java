@@ -122,6 +122,30 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("search")
+    public Object searchPost(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "page-size", required = false) Integer pageSize,
+            Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message(Constants.SUCCESSFUL)
+                    .data(service.searchPost(query, page, pageSize, connectedUser))
+                    .build();
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<>(response, response.getStatusCode());
+    }
+
     @GetMapping
     public Object getById(@RequestParam(name = "id") Long postId) {
         Response<?> response;

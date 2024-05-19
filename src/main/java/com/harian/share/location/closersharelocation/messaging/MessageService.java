@@ -11,7 +11,6 @@ import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.firebase.FirebaseCloudMessagingService;
-import com.harian.share.location.closersharelocation.firebase.model.NotificationData;
 import com.harian.share.location.closersharelocation.firebase.model.NotificationRequest;
 import com.harian.share.location.closersharelocation.messaging.model.Message;
 import com.harian.share.location.closersharelocation.messaging.model.MessageDTO;

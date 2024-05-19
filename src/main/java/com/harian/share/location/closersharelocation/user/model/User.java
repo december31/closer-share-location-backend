@@ -65,6 +65,8 @@ public class User implements UserDetails {
 
     private Double latitude;
     private Double longitude;
+    private String address;
+    private String phoneNumber;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String otp;

@@ -38,6 +38,12 @@ DELETE FROM friend_request WHERE requestor_id > 2
 DELETE FROM post WHERE user_id > 2
 DELETE FROM _user WHERE id > 2
 
+SELECT * FROM _user
+WHERE name LIKE 'u%'
+SELECT * FROM _user
+WHERE email LIKE 'u%'
+SELECT * FROM _user
+WHERE address LIKE 'u%'
 
 SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT) as bool
 FROM _user WHERE id = 1;

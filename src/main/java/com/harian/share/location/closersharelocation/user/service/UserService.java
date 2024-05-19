@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.post.PostDTO;
 import com.harian.share.location.closersharelocation.post.PostRepository;
@@ -23,7 +24,14 @@ import com.harian.share.location.closersharelocation.user.repository.UserReposit
 import com.harian.share.location.closersharelocation.user.requests.ChangePasswordRequest;
 import com.harian.share.location.closersharelocation.user.requests.ResetPasswordRequest;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
+
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,6 +78,19 @@ public class UserService {
         return UserDTO.fromUser(
                 repository.findByEmail(user.getEmail())
                         .orElseThrow(() -> new UserNotFoundException("User not found")));
+    }
+
+    public List<User> searchUsers(String query, Integer page, Integer pageSize, Principal connectedUser)
+            throws UserNotFoundException {
+        User user = getUserFromPrincipal(connectedUser)
+                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        List<User> users = new ArrayList<>();
+        users.addAll(repository.findByNameContaining(query));
+        users.addAll(repository.findByEmailContaining(query));
+        users.addAll(repository.findByAddressContaining(query));
+        users.addAll(repository.findByPhoneNumberContaining(query));
+        users = users.stream().distinct().limit(20).collect(Collectors.toList());
+        return users;
     }
 
     public UserDTO getUserInformation(Long userId, Principal connectedUser) throws UserNotFoundException {
@@ -179,6 +200,32 @@ public class UserService {
     public List<DeviceDTO> getDevices(Principal connectedUser) throws UserNotFoundException {
         User user = getUserFromPrincipal(connectedUser).orElseThrow(() -> new UserNotFoundException("user not found"));
         return user.getDevices().stream().map(device -> DeviceDTO.fromDevice(device)).collect(Collectors.toList());
+    }
+
+    void updateAvatar(HttpServletRequest request) {
+
+    }
+
+    private void saveAvatarImage(HttpServletRequest request, User user) throws IOException, ServletException {
+        List<Part> imageParts = request.getParts().stream().filter(part -> part.getName().equals("image"))
+                .collect(Collectors.toList());
+        String absoluteFolderPath = "E:/CloserShareLocation/avatar/" + user.getId();
+        String relativeFolderPath = "avatar/" + user.getId();
+        File folder = new File(absoluteFolderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        imageParts.forEach(item -> {
+            try {
+                String path = absoluteFolderPath + "/" + item.getSubmittedFileName();
+                String dbPath = relativeFolderPath + "/" + item.getSubmittedFileName();
+                item.write(path);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public Optional<User> getUserFromPrincipal(Principal connectedUser) {

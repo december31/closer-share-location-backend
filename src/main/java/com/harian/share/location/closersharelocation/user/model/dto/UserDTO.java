@@ -20,6 +20,7 @@ public class UserDTO {
     private String avatar;
     private String email;
     private Gender gender;
+    private String address;
     private Double latitude;
     private Double longitude;
 
@@ -33,6 +34,7 @@ public class UserDTO {
         this.avatar = user.getAvatar();
         this.email = user.getEmail();
         this.gender = user.getGender();
+        this.address = user.getAddress();
         this.latitude = user.getLatitude();
         this.longitude = user.getLongitude();
         this.isFriend = isFriend;

@@ -13,10 +13,17 @@ import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.harian.share.location.closersharelocation.firebase.model.NotificationRequest;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class FirebaseCloudMessagingService {
 
     public <T> void pushNotification(NotificationRequest<T> notification) throws FirebaseMessagingException {
+        if (notification.getTokens().isEmpty()) {
+            log.warn("missing device tokens");
+            return;
+        }
         MulticastMessage message = getPreConfiguredMessageToToken(notification);
         sendAndGetResponse(message);
     }

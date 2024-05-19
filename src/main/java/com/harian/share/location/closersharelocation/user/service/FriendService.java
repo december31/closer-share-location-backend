@@ -11,7 +11,6 @@ import com.harian.share.location.closersharelocation.exception.FriendRequestAlre
 import com.harian.share.location.closersharelocation.exception.FriendRequestNotExistedException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.firebase.FirebaseCloudMessagingService;
-import com.harian.share.location.closersharelocation.firebase.model.NotificationData;
 import com.harian.share.location.closersharelocation.firebase.model.NotificationRequest;
 import com.harian.share.location.closersharelocation.user.model.Friend;
 import com.harian.share.location.closersharelocation.user.model.FriendRequest;
