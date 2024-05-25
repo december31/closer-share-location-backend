@@ -23,7 +23,9 @@ public class UserDTO {
     private String address;
     private Double latitude;
     private Double longitude;
-
+    
+    @JsonProperty("phone-number")
+    private String phoneNumber;
     @JsonProperty("is-friend")
     private Boolean isFriend;
 

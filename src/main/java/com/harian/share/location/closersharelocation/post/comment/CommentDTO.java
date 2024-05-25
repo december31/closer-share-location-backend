@@ -18,9 +18,13 @@ public class CommentDTO {
     private Long createdTime;
 
     public CommentDTO(Comment comment) {
-        this.id = comment.getId(); 
+        this.id = comment.getId();
         this.content = comment.getContent();
         this.owner = UserDTO.fromUser(comment.getOwner());
         this.createdTime = comment.getCreatedTime();
+    }
+
+    public static CommentDTO fromComment(Comment comment) {
+        return new CommentDTO(comment);
     }
 }

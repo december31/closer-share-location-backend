@@ -26,6 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 
 import com.harian.share.location.closersharelocation.post.comment.Comment;
+import com.harian.share.location.closersharelocation.post.comment.CommentDTO;
 import com.harian.share.location.closersharelocation.post.comment.CommentRepository;
 import com.harian.share.location.closersharelocation.post.image.Image;
 import com.harian.share.location.closersharelocation.post.image.ImageRepository;
@@ -83,14 +84,17 @@ public class PostService {
         });
     }
 
-    public Comment createComment(Comment comment, Principal connectedUser, Long postId) throws PostNotFoundException {
+    public Comment createComment(CommentDTO commentDTO, Principal connectedUser, Long postId)
+            throws PostNotFoundException {
         User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
-        comment.setOwner(user);
-        comment.setCreatedTime(System.currentTimeMillis());
-        comment.setPost(post);
-
+        Comment comment = Comment.builder()
+                .content(commentDTO.getContent())
+                .owner(user)
+                .post(post)
+                .createdTime(System.currentTimeMillis())
+                .build();
         return commentRepository.save(comment);
     }
 
@@ -128,8 +132,8 @@ public class PostService {
 
     public List<PostDTO> searchPost(String query, Integer page, Integer pageSize, Principal connectedUser)
             throws UserNotFoundException {
-        User user = userService.getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        // User user = userService.getUserFromPrincipal(connectedUser)
+        //         .orElseThrow(() -> new UserNotFoundException("connected user not found"));
         List<Post> posts = new ArrayList<>();
         List<User> users = userService.searchUsers(query, page, pageSize, connectedUser);
         posts.addAll(postRepository.findByTitleContaining(query));

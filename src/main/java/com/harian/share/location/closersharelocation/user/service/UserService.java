@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.post.PostDTO;
 import com.harian.share.location.closersharelocation.post.PostRepository;
@@ -202,30 +201,42 @@ public class UserService {
         return user.getDevices().stream().map(device -> DeviceDTO.fromDevice(device)).collect(Collectors.toList());
     }
 
-    void updateAvatar(HttpServletRequest request) {
-
+    public UserDTO updateAvatar(HttpServletRequest request, Principal connectedUser)
+            throws UserNotFoundException, IOException, ServletException {
+        User user = getUserFromPrincipal(connectedUser)
+                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        String path = saveAvatarImage(request, user);
+        user.setAvatar(path);
+        user = repository.save(user);
+        return UserDTO.fromUser(user);
     }
 
-    private void saveAvatarImage(HttpServletRequest request, User user) throws IOException, ServletException {
-        List<Part> imageParts = request.getParts().stream().filter(part -> part.getName().equals("image"))
-                .collect(Collectors.toList());
+    private String saveAvatarImage(HttpServletRequest request, User user) throws IOException, ServletException {
+        Part imagePart = request.getPart("image");
         String absoluteFolderPath = "E:/CloserShareLocation/avatar/" + user.getId();
         String relativeFolderPath = "avatar/" + user.getId();
         File folder = new File(absoluteFolderPath);
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        imageParts.forEach(item -> {
-            try {
-                String path = absoluteFolderPath + "/" + item.getSubmittedFileName();
-                String dbPath = relativeFolderPath + "/" + item.getSubmittedFileName();
-                item.write(path);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        String path = absoluteFolderPath + "/" + imagePart.getSubmittedFileName();
+        String dbPath = relativeFolderPath + "/" + imagePart.getSubmittedFileName();
+        imagePart.write(path);
+        return dbPath;
+    }
+
+    public UserDTO updateInformation(UserDTO userDTO, Principal connectedUser) throws UserNotFoundException {
+        User user = getUserFromPrincipal(connectedUser)
+                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        user.setAddress(userDTO.getAddress());
+        user.setLastModified(System.currentTimeMillis());
+        user.setName(userDTO.getName());
+        user.setDescription(userDTO.getDescription());
+        user.setEmail(userDTO.getEmail());
+        user.setGender(userDTO.getGender());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user = repository.save(user);
+        return UserDTO.fromUser(user);
     }
 
     public Optional<User> getUserFromPrincipal(Principal connectedUser) {

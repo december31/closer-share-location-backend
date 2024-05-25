@@ -1,7 +1,7 @@
 USE closerShareLocation
-USE master
-DROP DATABASE closerShareLocation
-CREATE DATABASE closerShareLocation
+-- USE master
+-- DROP DATABASE closerShareLocation
+-- CREATE DATABASE closerShareLocation
 -- DROP TABLE IF EXISTS _user
 -- DROP TABLE IF EXISTS token
 -- DROP TABLE IF EXISTS post
@@ -33,10 +33,12 @@ SELECT * FROM friend_request WHERE friend_request.user_id = 2
 
 SELECT * FROM message WHERE (sender_id = 1 AND receiver_id = 314) OR (sender_id = 314 AND receiver_id = 1) ORDER BY time desc
 
-DELETE FROM friend WHERE friend_id > 2 OR user_id > 2
-DELETE FROM friend_request WHERE requestor_id > 2
-DELETE FROM post WHERE user_id > 2
-DELETE FROM _user WHERE id > 2
+-- DELETE FROM friend WHERE friend_id > 2 OR user_id > 200
+-- DELETE FROM friend_request WHERE requestor_id > 200
+-- DELETE FROM post WHERE user_id > 200
+-- DELETE FROM token where user_id > 200
+-- DELETE FROM device where user_id > 200
+-- DELETE FROM _user WHERE id > 200
 
 SELECT * FROM _user
 WHERE name LIKE 'u%'

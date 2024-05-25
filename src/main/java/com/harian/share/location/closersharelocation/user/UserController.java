@@ -3,6 +3,7 @@ package com.harian.share.location.closersharelocation.user;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +28,11 @@ import com.harian.share.location.closersharelocation.user.requests.ResetPassword
 import com.harian.share.location.closersharelocation.user.service.FriendService;
 import com.harian.share.location.closersharelocation.user.service.UserService;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
 import java.security.Principal;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RestController
@@ -80,6 +84,44 @@ public class UserController {
                     .build();
         }
         return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
+    }
+
+    @PatchMapping(value = "update-avatar", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<?> updateAvatar(HttpServletRequest request, Principal connectedUser) {
+        Response<?> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("create post successful")
+                    .data(userService.updateAvatar(request, connectedUser))
+                    .build();
+        } catch (IOException | ServletException | UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("update")
+    public ResponseEntity<?> updateInformation(@RequestBody UserDTO userDTO, Principal connectedUser) {
+        Response<?> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("create post successful")
+                    .data(userService.updateInformation(userDTO, connectedUser))
+                    .build();
+        } catch (UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("{id}")

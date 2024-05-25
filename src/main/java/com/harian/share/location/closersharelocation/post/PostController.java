@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
-import com.harian.share.location.closersharelocation.post.comment.Comment;
+import com.harian.share.location.closersharelocation.post.comment.CommentDTO;
 import com.harian.share.location.closersharelocation.utils.Constants;
 
 import jakarta.servlet.ServletException;
@@ -50,13 +50,13 @@ public class PostController {
     }
 
     @PostMapping("comment")
-    public Object comment(@RequestBody Comment comment, @RequestParam("id") Long postId, Principal connectedUser) {
+    public Object comment(@RequestBody CommentDTO comment, @RequestParam("id") Long postId, Principal connectedUser) {
         Response<Object> response;
         try {
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message(Constants.SUCCESSFUL)
-                    .data(service.createComment(comment, connectedUser, postId))
+                    .data(CommentDTO.fromComment(service.createComment(comment, connectedUser, postId)))
                     .build();
         } catch (PostNotFoundException e) {
             response = Response.builder()
@@ -153,7 +153,7 @@ public class PostController {
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message("successful")
-                    .data(service.findById(postId))
+                    .data(PostDTO.fromPost(service.findById(postId)))
                     .build();
         } catch (PostNotFoundException e) {
             response = Response.builder()
