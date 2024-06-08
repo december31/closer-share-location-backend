@@ -31,8 +31,7 @@ public class MessageService {
     private final FirebaseCloudMessagingService firebaseService;
 
     public MessageDTO sendMessage(MessageDTO messageDTO, Principal connectedUser) throws UserNotFoundException {
-        User user = userService.getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("sender not found"));
+        User user = userService.getUserFromPrincipal(connectedUser);
         Message message = Message.builder()
                 .message(messageDTO.getMessage())
                 .sender(user)
@@ -65,8 +64,7 @@ public class MessageService {
     }
 
     public List<MessageDTO> getMessages(Long userID, Principal connectedUser) throws UserNotFoundException {
-        User sender = userService.getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("sender not found"));
+        User sender = userService.getUserFromPrincipal(connectedUser);
         User receiver = userRepository.findById(userID)
                 .orElseThrow(() -> new UserNotFoundException("receiver not found"));
         List<Message> messages = messageRepository.findAllMessage(sender.getId(), receiver.getId());

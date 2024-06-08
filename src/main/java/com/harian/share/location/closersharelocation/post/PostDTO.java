@@ -28,6 +28,7 @@ public class PostDTO {
     private Set<CommentDTO> comments;
     private Set<UserDTO> likes;
     private Set<UserDTO> watches;
+    private Boolean isLiked;
 
     public PostDTO(Post post) {
         this.id = post.getId();

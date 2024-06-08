@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
+import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
@@ -25,7 +26,12 @@ public class LocationService {
     private final SimpUserRegistry userRegistry;
 
     public void updateLocation(Location location, Principal connectedUser) {
-        User user = userService.getUserFromPrincipal(connectedUser).orElse(null);
+        User user;
+        try {
+            user = userService.getUserFromPrincipal(connectedUser);
+        } catch (UserNotFoundException e) {
+            user = null;
+        }
         System.out.println("===========================");
         userRegistry.findSubscriptions(it -> true).forEach(sub -> {
             System.out.println(sub.getDestination() + " -- " + sub.getId());
@@ -43,10 +49,10 @@ public class LocationService {
                     .map(friend -> userRepository.findById(friend.getFriend().getId()).orElse(null))
                     .filter(friend -> friend != null)
                     .collect(Collectors.toSet());
-
+            User u = user;
             friends.forEach(friend -> {
                 simpMessagingTemplate.convertAndSend(friend.getLocationSubscribeSocketEndPoint(),
-                        UserDTO.fromUser(user));
+                        UserDTO.fromUser(u));
             });
         }
     }

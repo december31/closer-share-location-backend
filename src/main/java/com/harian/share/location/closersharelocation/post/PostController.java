@@ -58,7 +58,7 @@ public class PostController {
                     .message(Constants.SUCCESSFUL)
                     .data(CommentDTO.fromComment(service.createComment(comment, connectedUser, postId)))
                     .build();
-        } catch (PostNotFoundException e) {
+        } catch (PostNotFoundException | UserNotFoundException e) {
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message(e.getMessage())
@@ -78,7 +78,7 @@ public class PostController {
                     .message(Constants.SUCCESSFUL)
                     .data(postDTO)
                     .build();
-        } catch (PostNotFoundException e) {
+        } catch (PostNotFoundException | UserNotFoundException e) {
             e.printStackTrace();
             response = Response.builder()
                     .status(HttpStatus.NOT_FOUND)
@@ -99,7 +99,7 @@ public class PostController {
                     .message(Constants.SUCCESSFUL)
                     .data(postDTO)
                     .build();
-        } catch (PostNotFoundException e) {
+        } catch (PostNotFoundException | UserNotFoundException e) {
             e.printStackTrace();
             response = Response.builder()
                     .status(HttpStatus.NOT_FOUND)

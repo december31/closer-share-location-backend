@@ -40,10 +40,7 @@ public class FriendService {
         User friend = userRepository.findByEmail(_friend.getEmail())
                 .orElseThrow(() -> new UserNotFoundException(
                         "user with email " + _friend.getEmail() + " not existed"));
-        User user = userService.getUserFromPrincipal(connectedUser)
-                .orElseThrow(
-                        () -> new UserNotFoundException("user with email "
-                                + connectedUser.getName() + " not existed"));
+        User user = userService.getUserFromPrincipal(connectedUser);
 
         FriendRequest friendRequest = user.getFriendRequests().stream()
                 .filter(fr -> fr.getUser().getId() == friend.getId())
@@ -83,10 +80,7 @@ public class FriendService {
 
     public UserDTO acceptFriendRequest(User _requestor, Principal connectedUser)
             throws UserNotFoundException, FriendRequestNotExistedException, AlreadyFriendException {
-        User user = userService.getUserFromPrincipal(connectedUser)
-                .orElseThrow(
-                        () -> new UserNotFoundException("user with email "
-                                + connectedUser.getName() + " not existed"));
+        User user = userService.getUserFromPrincipal(connectedUser);
         User requestor = userRepository.findByEmail(_requestor.getEmail())
                 .orElseThrow(
                         () -> new UserNotFoundException("user with email "
@@ -106,10 +100,7 @@ public class FriendService {
 
     public UserDTO denyFriendRequest(User _requestor, Principal connectedUser)
             throws UserNotFoundException, FriendRequestNotExistedException {
-        User user = userService.getUserFromPrincipal(connectedUser)
-                .orElseThrow(
-                        () -> new UserNotFoundException("user with email "
-                                + connectedUser.getName() + " not existed"));
+        User user = userService.getUserFromPrincipal(connectedUser);
         User requestor = userRepository.findByEmail(_requestor.getEmail())
                 .orElseThrow(
                         () -> new UserNotFoundException("user with email "
@@ -124,10 +115,7 @@ public class FriendService {
 
     public List<FriendRequestDTO> getFriendRequest(Principal connectedUser, Integer page, Integer pageSize)
             throws UserNotFoundException {
-        User user = userService.getUserFromPrincipal(connectedUser)
-                .orElseThrow(
-                        () -> new UserNotFoundException("user with email "
-                                + connectedUser.getName() + " not existed"));
+        User user = userService.getUserFromPrincipal(connectedUser);
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 6 : pageSize;
         return user.getFriendRequests().stream()

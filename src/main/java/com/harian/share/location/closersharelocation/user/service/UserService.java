@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,8 +80,7 @@ public class UserService {
 
     public List<User> searchUsers(String query, Integer page, Integer pageSize, Principal connectedUser)
             throws UserNotFoundException {
-        User user = getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        User user = getUserFromPrincipal(connectedUser);
         List<User> users = new ArrayList<>();
         users.addAll(repository.findByNameContaining(query));
         users.addAll(repository.findByEmailContaining(query));
@@ -93,8 +91,7 @@ public class UserService {
     }
 
     public UserDTO getUserInformation(Long userId, Principal connectedUser) throws UserNotFoundException {
-        User currentUser = getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User currentUser = getUserFromPrincipal(connectedUser);
         User user = repository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Friend friend = currentUser.getFriends().stream().filter(f -> f.getFriend().getId() == user.getId())
@@ -108,8 +105,7 @@ public class UserService {
 
     public FriendsResponse getFriends(Principal connectedUser, Integer page, Integer pageSize)
             throws UserNotFoundException {
-        User user = getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("user not found"));
+        User user = getUserFromPrincipal(connectedUser);
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 6 : pageSize;
         FriendsResponse friendsResponse = FriendsResponse.builder()
@@ -142,8 +138,7 @@ public class UserService {
 
     public List<PostDTO> getPost(Principal connectedUser, Integer page, Integer pageSize)
             throws UserNotFoundException {
-        User user = getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("user not found"));
+        User user = getUserFromPrincipal(connectedUser);
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
         return postRepository
@@ -154,8 +149,7 @@ public class UserService {
     }
 
     public List<PostDTO> getPost(Long userId, Integer page, Integer pageSize) throws UserNotFoundException {
-        User user = repository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("user not found"));
+        User user = repository.findById(userId).orElseThrow(() -> new UserNotFoundException("user not found"));
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
         return postRepository
@@ -166,7 +160,7 @@ public class UserService {
     }
 
     public DeviceDTO updateDevice(Device _device, Principal connectedUser) throws UserNotFoundException {
-        User user = getUserFromPrincipal(connectedUser).orElseThrow(() -> new UserNotFoundException("user not found"));
+        User user = getUserFromPrincipal(connectedUser);
         Device device = user.getDevices().stream().filter(d -> d.getId().equals(_device.getId())).findFirst()
                 .orElse(null);
         if (device == null) {
@@ -197,14 +191,13 @@ public class UserService {
     }
 
     public List<DeviceDTO> getDevices(Principal connectedUser) throws UserNotFoundException {
-        User user = getUserFromPrincipal(connectedUser).orElseThrow(() -> new UserNotFoundException("user not found"));
+        User user = getUserFromPrincipal(connectedUser);
         return user.getDevices().stream().map(device -> DeviceDTO.fromDevice(device)).collect(Collectors.toList());
     }
 
     public UserDTO updateAvatar(HttpServletRequest request, Principal connectedUser)
             throws UserNotFoundException, IOException, ServletException {
-        User user = getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        User user = getUserFromPrincipal(connectedUser);
         String path = saveAvatarImage(request, user);
         user.setAvatar(path);
         user = repository.save(user);
@@ -226,8 +219,7 @@ public class UserService {
     }
 
     public UserDTO updateInformation(UserDTO userDTO, Principal connectedUser) throws UserNotFoundException {
-        User user = getUserFromPrincipal(connectedUser)
-                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        User user = getUserFromPrincipal(connectedUser);
         user.setAddress(userDTO.getAddress());
         user.setLastModified(System.currentTimeMillis());
         user.setName(userDTO.getName());
@@ -239,8 +231,9 @@ public class UserService {
         return UserDTO.fromUser(user);
     }
 
-    public Optional<User> getUserFromPrincipal(Principal connectedUser) {
+    public User getUserFromPrincipal(Principal connectedUser) throws UserNotFoundException {
         User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-        return repository.findByEmail(user.getEmail());
+        return repository.findByEmail(user.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("connected user not found"));
     }
 }

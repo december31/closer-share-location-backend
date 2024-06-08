@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -85,8 +84,8 @@ public class PostService {
     }
 
     public Comment createComment(CommentDTO commentDTO, Principal connectedUser, Long postId)
-            throws PostNotFoundException {
-        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+            throws PostNotFoundException, UserNotFoundException {
+        User user = userService.getUserFromPrincipal(connectedUser);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
         Comment comment = Comment.builder()
@@ -98,8 +97,8 @@ public class PostService {
         return commentRepository.save(comment);
     }
 
-    public Post like(Long postId, Principal connectedUser) throws PostNotFoundException {
-        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    public Post like(Long postId, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
+        User user = userService.getUserFromPrincipal(connectedUser);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
         post.getLikes().add(user);
@@ -108,8 +107,8 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post watch(Long postId, Principal connectedUser) throws PostNotFoundException {
-        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    public Post watch(Long postId, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
+        User user = userService.getUserFromPrincipal(connectedUser);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
         if (!post.getWatches().contains(user)) {
@@ -133,7 +132,7 @@ public class PostService {
     public List<PostDTO> searchPost(String query, Integer page, Integer pageSize, Principal connectedUser)
             throws UserNotFoundException {
         // User user = userService.getUserFromPrincipal(connectedUser)
-        //         .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        // .orElseThrow(() -> new UserNotFoundException("connected user not found"));
         List<Post> posts = new ArrayList<>();
         List<User> users = userService.searchUsers(query, page, pageSize, connectedUser);
         posts.addAll(postRepository.findByTitleContaining(query));
