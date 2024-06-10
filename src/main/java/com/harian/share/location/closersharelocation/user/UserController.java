@@ -19,6 +19,7 @@ import com.harian.share.location.closersharelocation.common.Response;
 import com.harian.share.location.closersharelocation.exception.AlreadyFriendException;
 import com.harian.share.location.closersharelocation.exception.FriendRequestAlreadyExistedException;
 import com.harian.share.location.closersharelocation.exception.FriendRequestNotExistedException;
+import com.harian.share.location.closersharelocation.exception.PasswordIncorrectException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.user.model.Device;
 import com.harian.share.location.closersharelocation.user.model.User;
@@ -315,18 +316,25 @@ public class UserController {
         return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
     }
 
-    @PatchMapping
+    @PatchMapping("update-password")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser) {
-
-        userService.changePassword(request, connectedUser);
-        Response<?> response = Response.builder()
-                .status(HttpStatus.OK)
-                .message("change password successful")
-                .data(null)
-                .build();
-        return ResponseEntity.ok(response);
+        try {
+            Response<?> response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("change password successful")
+                    .data(userService.changePassword(request, connectedUser))
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (PasswordIncorrectException e) {
+            Response<?> response = Response.builder()
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+            return ResponseEntity.ok(response);
+        }
     }
 
     @PatchMapping(value = "reset-password")
