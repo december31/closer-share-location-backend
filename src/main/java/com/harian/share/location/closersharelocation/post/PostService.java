@@ -97,17 +97,21 @@ public class PostService {
         return commentRepository.save(comment);
     }
 
-    public Post like(Long postId, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
+    public PostDTO like(Long postId, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
         User user = userService.getUserFromPrincipal(connectedUser);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
         post.getLikes().add(user);
         user.getLikedPosts().add(post);
         userRepository.save(user);
-        return postRepository.save(post);
+        PostDTO postDTO = PostDTO.fromPost(post);
+        postDTO.setIsLiked(
+            !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList()).isEmpty()
+        );
+        return postDTO;
     }
 
-    public Post watch(Long postId, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
+    public PostDTO watch(Long postId, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
         User user = userService.getUserFromPrincipal(connectedUser);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
@@ -116,23 +120,34 @@ public class PostService {
             user.getWatchedPosts().add(post);
         }
         userRepository.save(user);
-        return postRepository.save(post);
+        PostDTO postDTO = PostDTO.fromPost(post);
+        postDTO.setIsLiked(
+            !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList()).isEmpty()
+        );
+        return postDTO;
     }
 
-    public List<PostDTO> findByPage(Integer page, Integer pageSize) {
+    public List<PostDTO> findByPage(Integer page, Integer pageSize, Principal connectedUser)
+            throws UserNotFoundException {
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
+        User user = userService.getUserFromPrincipal(connectedUser);
         List<Post> posts = postRepository.findAll(PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
                 .getContent();
-        List<PostDTO> postDTOs = posts.stream().map(post -> new PostDTO(post))
+        List<PostDTO> postDTOs = posts.stream().map(post -> {
+            PostDTO postDTO = PostDTO.fromPost(post);
+            postDTO.setIsLiked(
+                    !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList())
+                            .isEmpty());
+            return postDTO;
+        })
                 .collect(Collectors.toList());
         return postDTOs;
     }
 
     public List<PostDTO> searchPost(String query, Integer page, Integer pageSize, Principal connectedUser)
             throws UserNotFoundException {
-        // User user = userService.getUserFromPrincipal(connectedUser)
-        // .orElseThrow(() -> new UserNotFoundException("connected user not found"));
+        User user = userService.getUserFromPrincipal(connectedUser);
         List<Post> posts = new ArrayList<>();
         List<User> users = userService.searchUsers(query, page, pageSize, connectedUser);
         posts.addAll(postRepository.findByTitleContaining(query));
@@ -141,11 +156,28 @@ public class PostService {
             posts.addAll(u.getOwnedPosts());
         }
         posts = posts.stream().distinct().limit(20).collect(Collectors.toList());
-        return posts.stream().map(post -> PostDTO.fromPost(post)).collect(Collectors.toList());
+        return posts.stream().map(post -> {
+            PostDTO postDTO = PostDTO.fromPost(post);
+            postDTO.setIsLiked(
+                    !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList())
+                            .isEmpty());
+            return postDTO;
+        }).collect(Collectors.toList());
     }
 
     public Post findById(Long id) throws PostNotFoundException {
         return postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException("post with id '" + id + "' not found"));
+    }
+
+    public PostDTO findById(Long id, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
+        User user = userService.getUserFromPrincipal(connectedUser);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException("post with id '" + id + "' not found"));
+        PostDTO postDTO = PostDTO.fromPost(post);
+        postDTO.setIsLiked(
+                !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList())
+                        .isEmpty());
+        return postDTO;
     }
 }

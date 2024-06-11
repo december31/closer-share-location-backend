@@ -72,11 +72,10 @@ public class PostController {
     public ResponseEntity<?> like(@RequestParam(name = "id") Long postId, Principal connectedUser) {
         Response<Object> response;
         try {
-            PostDTO postDTO = new PostDTO(service.like(postId, connectedUser));
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message(Constants.SUCCESSFUL)
-                    .data(postDTO)
+                    .data(service.like(postId, connectedUser))
                     .build();
         } catch (PostNotFoundException | UserNotFoundException e) {
             e.printStackTrace();
@@ -93,11 +92,10 @@ public class PostController {
     public Object watch(@RequestParam(name = "id") Long postId, Principal connectedUser) {
         Response<Object> response;
         try {
-            PostDTO postDTO = new PostDTO(service.watch(postId, connectedUser));
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message(Constants.SUCCESSFUL)
-                    .data(postDTO)
+                    .data(service.watch(postId, connectedUser))
                     .build();
         } catch (PostNotFoundException | UserNotFoundException e) {
             e.printStackTrace();
@@ -111,13 +109,25 @@ public class PostController {
     }
 
     @GetMapping("popular")
-    public Object getPopular(@RequestParam(name = "page", required = false) Integer page,
-            @RequestParam(name = "page-size", required = false) Integer pageSize) {
-        Response<?> response = Response.builder()
-                .status(HttpStatus.OK)
-                .message(Constants.SUCCESSFUL)
-                .data(service.findByPage(page, pageSize))
-                .build();
+    public Object getPopular(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "page-size", required = false) Integer pageSize,
+            Principal connectedUser) {
+        Response<?> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message(Constants.SUCCESSFUL)
+                    .data(service.findByPage(page, pageSize, connectedUser))
+                    .build();
+        } catch (UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+            e.printStackTrace();
+        }
 
         return ResponseEntity.ok(response);
     }
@@ -147,15 +157,15 @@ public class PostController {
     }
 
     @GetMapping
-    public Object getById(@RequestParam(name = "id") Long postId) {
+    public Object getById(@RequestParam(name = "id") Long postId, Principal connectedUser) {
         Response<?> response;
         try {
             response = Response.builder()
                     .status(HttpStatus.OK)
                     .message("successful")
-                    .data(PostDTO.fromPost(service.findById(postId)))
+                    .data(service.findById(postId, connectedUser))
                     .build();
-        } catch (PostNotFoundException e) {
+        } catch (PostNotFoundException | UserNotFoundException e) {
             response = Response.builder()
                     .status(HttpStatus.NOT_FOUND)
                     .message(e.getMessage())

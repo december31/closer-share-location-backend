@@ -65,8 +65,10 @@ public class User implements UserDetails {
 
     private Double latitude;
     private Double longitude;
-    private String address;
     private String phoneNumber;
+
+    @Column(columnDefinition = "nvarchar(255)")
+    private String address;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String otp;

@@ -37,6 +37,7 @@ public class PostDTO {
         this.createdTime = post.getCreatedTime();
         this.lastModified = post.getLastModified();
         this.owner = UserDTO.fromUser(post.getOwner());
+        this.isLiked = false;
 
         if (post.getImages() != null) {
             this.images = post.getImages().stream().map(image -> new ImageDTO(image)).collect(Collectors.toSet());

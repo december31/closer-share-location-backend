@@ -18,6 +18,7 @@ import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.model.dto.DeviceDTO;
 import com.harian.share.location.closersharelocation.user.model.dto.FriendDTO;
 import com.harian.share.location.closersharelocation.user.model.dto.FriendsResponse;
+import com.harian.share.location.closersharelocation.user.model.dto.UpdateAddressRequest;
 import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 import com.harian.share.location.closersharelocation.user.repository.DeviceRepository;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
@@ -142,7 +143,13 @@ public class UserService {
         return postRepository
                 .findByOwner(user, PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
                 .getContent().stream()
-                .map(post -> PostDTO.fromPost(post))
+                .map(post -> {
+                    PostDTO postDTO = PostDTO.fromPost(post);
+                    postDTO.setIsLiked(
+                            !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId())
+                                    .collect(Collectors.toList()).isEmpty());
+                    return postDTO;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -153,7 +160,13 @@ public class UserService {
         return postRepository
                 .findByOwner(user, PageRequest.of(page, pageSize, Sort.by("createdTime").descending()))
                 .getContent().stream()
-                .map(post -> PostDTO.fromPost(post))
+                .map(post -> {
+                    PostDTO postDTO = PostDTO.fromPost(post);
+                    postDTO.setIsLiked(
+                        !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList()).isEmpty()
+                    );
+                    return postDTO;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -227,6 +240,12 @@ public class UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user = repository.save(user);
         return UserDTO.fromUser(user);
+    }
+
+    public UserDTO updateAddress(UpdateAddressRequest request, Principal connectedUser) throws UserNotFoundException {
+        User user = getUserFromPrincipal(connectedUser);
+        user.setAddress(request.getAddress());
+        return UserDTO.fromUser(repository.save(user));
     }
 
     public User getUserFromPrincipal(Principal connectedUser) throws UserNotFoundException {
