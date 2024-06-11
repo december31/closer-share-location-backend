@@ -49,6 +49,10 @@ WHERE address LIKE 'u%'
 
 SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT) as bool
 FROM _user WHERE id = 1;
+
+ALTER TABLE _user
+ALTER COLUMN address NVARCHAR(255)
+
 -- ALTER TABLE comment
 -- ALTER COLUMN content ntext
 

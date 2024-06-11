@@ -23,6 +23,7 @@ import com.harian.share.location.closersharelocation.exception.PasswordIncorrect
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.user.model.Device;
 import com.harian.share.location.closersharelocation.user.model.User;
+import com.harian.share.location.closersharelocation.user.model.dto.UpdateAddressRequest;
 import com.harian.share.location.closersharelocation.user.model.dto.UserDTO;
 import com.harian.share.location.closersharelocation.user.requests.ChangePasswordRequest;
 import com.harian.share.location.closersharelocation.user.requests.ResetPasswordRequest;
@@ -335,6 +336,25 @@ public class UserController {
                     .build();
             return ResponseEntity.ok(response);
         }
+    }
+
+    @PatchMapping("update-address")
+    public ResponseEntity<?> updateAddress(@RequestBody UpdateAddressRequest request, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message("successful")
+                    .data(userService.updateAddress(request, connectedUser))
+                    .build();
+        } catch (UserNotFoundException e) {
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<Response<?>>(response, null, response.getStatusCode());
     }
 
     @PatchMapping(value = "reset-password")
