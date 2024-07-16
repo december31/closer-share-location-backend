@@ -12,14 +12,7 @@ public class FriendDTO {
     private Long since;
 
     public static FriendDTO fromFriend(Friend friendRequest) {
-        UserDTO friend = UserDTO.builder()
-                .id(friendRequest.getFriend().getId())
-                .name(friendRequest.getFriend().getName())
-                .description(friendRequest.getFriend().getDescription())
-                .avatar(friendRequest.getFriend().getAvatar())
-                .email(friendRequest.getFriend().getEmail())
-                .gender(friendRequest.getFriend().getGender())
-                .build();
+        UserDTO friend = UserDTO.fromUser(friendRequest.getFriend());
 
         return FriendDTO.builder()
                 .information(friend)

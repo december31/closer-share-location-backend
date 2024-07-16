@@ -11,6 +11,7 @@ import com.harian.share.location.closersharelocation.exception.FriendRequestAlre
 import com.harian.share.location.closersharelocation.exception.FriendRequestNotExistedException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.firebase.FirebaseCloudMessagingService;
+import com.harian.share.location.closersharelocation.firebase.model.NotificationData;
 import com.harian.share.location.closersharelocation.firebase.model.NotificationRequest;
 import com.harian.share.location.closersharelocation.user.model.Friend;
 import com.harian.share.location.closersharelocation.user.model.FriendRequest;
@@ -68,7 +69,11 @@ public class FriendService {
         try {
             firebaseService.pushNotification(NotificationRequest.builder()
                     .title("You got a friend request from " + user.getName())
-                    .data("")
+                    .data(NotificationData.builder()
+                            .type(NotificationData.Type.FRIEND_REQUEST)
+                            .title("You got a friend request from " + user.getName())
+                            .data(null)
+                            .build())
                     .tokens(friend.getDevices().stream()
                             .map(device -> device.getFirebaseMessagingToken()).toList())
                     .build());

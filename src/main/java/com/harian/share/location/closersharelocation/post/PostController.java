@@ -88,6 +88,26 @@ public class PostController {
         return new ResponseEntity<>(response, response.getStatusCode());
     }
 
+    @PostMapping("unlike")
+    public ResponseEntity<?> unlike(@RequestParam(name = "id") Long postId, Principal connectedUser) {
+        Response<Object> response;
+        try {
+            response = Response.builder()
+                    .status(HttpStatus.OK)
+                    .message(Constants.SUCCESSFUL)
+                    .data(service.unlike(postId, connectedUser))
+                    .build();
+        } catch (PostNotFoundException | UserNotFoundException e) {
+            e.printStackTrace();
+            response = Response.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+        return new ResponseEntity<>(response, response.getStatusCode());
+    }
+
     @PostMapping("watch")
     public Object watch(@RequestParam(name = "id") Long postId, Principal connectedUser) {
         Response<Object> response;

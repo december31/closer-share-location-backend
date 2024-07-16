@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.gson.Gson;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
 import com.harian.share.location.closersharelocation.firebase.FirebaseCloudMessagingService;
+import com.harian.share.location.closersharelocation.firebase.model.NotificationData;
 import com.harian.share.location.closersharelocation.firebase.model.NotificationRequest;
 import com.harian.share.location.closersharelocation.messaging.model.Message;
 import com.harian.share.location.closersharelocation.messaging.model.MessageDTO;
@@ -51,7 +53,11 @@ public class MessageService {
         try {
             firebaseService.pushNotification(NotificationRequest.builder()
                     .title(user.getName())
-                    .data(message.getMessage())
+                    .data(NotificationData.builder()
+                            .type(NotificationData.Type.POST)
+                            .title(response.getMessage())
+                            .data(new Gson().toJson(response))
+                            .build())
                     .priority(AndroidConfig.Priority.HIGH)
                     .tokens(message.getReceiver().getDevices().stream()
                             .map(device -> device.getFirebaseMessagingToken()).toList())

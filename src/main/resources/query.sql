@@ -17,7 +17,7 @@ USE closerShareLocation
 SELECT TOP(1000) * FROM _user
 SELECT * FROM post_images
 SELECT * FROM image
-SELECT token FROM token
+SELECT * FROM token
 SELECT * FROM post
 SELECT * FROM comment
 SELECT * FROM user_post_likes
@@ -59,9 +59,18 @@ ALTER COLUMN address NVARCHAR(255)
 -- ALTER TABLE comment
 -- ADD created_time bigint
 
+select * from post where user_id = 502
 
--- DELETE FROM token
--- DELETE FROM _user where id = 2
+-- DELETE FROM device where user_id = 502
+-- DELETE FROM token where user_id = 502
+-- DELETE FROM friend where user_id = 502 or friend_id = 502
+-- DELETE FROM friend_request where user_id = 502 or requestor_id = 502
+-- DELETE FROM message WHERE receiver_id = 502 or sender_id = 502
+-- DELETE FROM post where user_id = 502
+-- DELETE FROM user_post_likes WHERE post_id >= 352
+-- DELETE FROM [image] WHERE post_id >= 352
+-- DELETE FROM _user where id = 502
+
 -- DELETE FROM country
 -- DELETE FROM city
 -- DELETE FROM friend

@@ -24,12 +24,12 @@ public class NotificationRequest<T> implements Serializable {
     private T data;
 
     public String toJson() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().create();
         return gson.toJson(this);
     }
 
     public String getDataJson() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().create();
         return gson.toJson(data);
     }
 }

@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NotificationData<T> {
+public class NotificationData {
     private Type type;
-    private T data;
+    private String title;
+    private String data;
 
     public enum Type {
         FRIEND_REQUEST,
-        MESSAGE
+        MESSAGE,
+        POST
     }
 }

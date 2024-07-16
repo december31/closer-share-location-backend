@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
@@ -13,8 +14,14 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.messaging.AndroidConfig;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.gson.Gson;
 import com.harian.share.location.closersharelocation.exception.PostNotFoundException;
 import com.harian.share.location.closersharelocation.exception.UserNotFoundException;
+import com.harian.share.location.closersharelocation.firebase.FirebaseCloudMessagingService;
+import com.harian.share.location.closersharelocation.firebase.model.NotificationData;
+import com.harian.share.location.closersharelocation.firebase.model.NotificationRequest;
 import com.harian.share.location.closersharelocation.user.model.User;
 import com.harian.share.location.closersharelocation.user.repository.UserRepository;
 import com.harian.share.location.closersharelocation.user.service.UserService;
@@ -42,6 +49,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final Utils utils;
+    private final FirebaseCloudMessagingService firebaseService;
 
     public PostDTO create(HttpServletRequest request, Principal connectedUser)
             throws IOException, ServletException, UserNotFoundException {
@@ -56,7 +64,27 @@ public class PostService {
         post.setLastModified(System.currentTimeMillis());
         post = postRepository.save(post);
         saveImages(post, request, user);
-        return PostDTO.fromPost(post);
+
+        PostDTO postDTO = PostDTO.fromPost(post);
+
+        Set<User> friends = user.getFriends().stream().map(friend -> friend.getFriend()).collect(Collectors.toSet());
+
+        try {
+            firebaseService.pushNotification(NotificationRequest.builder()
+                    .title(user.getName())
+                    .data(NotificationData.builder()
+                            .type(NotificationData.Type.POST)
+                            .title("Just post a new moment")
+                            .data(new Gson().toJson(postDTO))
+                            .build())
+                    .priority(AndroidConfig.Priority.HIGH)
+                    .tokens(friends.stream().flatMap(f -> f.getDevices().stream())
+                            .map(device -> device.getFirebaseMessagingToken()).toList())
+                    .build());
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
+        return postDTO;
     }
 
     private void saveImages(Post post, HttpServletRequest request, User user) throws IOException, ServletException {
@@ -94,6 +122,24 @@ public class PostService {
                 .post(post)
                 .createdTime(System.currentTimeMillis())
                 .build();
+
+        if (comment.getOwner().getId() != user.getId()) {
+            try {
+                firebaseService.pushNotification(NotificationRequest.builder()
+                        .title(user.getName())
+                        .data(NotificationData.builder()
+                                .type(NotificationData.Type.POST)
+                                .title("Just comment on your post")
+                                .data(new Gson().toJson(PostDTO.fromPost(post)))
+                                .build())
+                        .priority(AndroidConfig.Priority.HIGH)
+                        .tokens(post.getOwner().getDevices().stream()
+                                .map(device -> device.getFirebaseMessagingToken()).toList())
+                        .build());
+            } catch (FirebaseMessagingException e) {
+                e.printStackTrace();
+            }
+        }
         return commentRepository.save(comment);
     }
 
@@ -106,8 +152,41 @@ public class PostService {
         userRepository.save(user);
         PostDTO postDTO = PostDTO.fromPost(post);
         postDTO.setIsLiked(
-            !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList()).isEmpty()
-        );
+                !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList())
+                        .isEmpty());
+
+        User owner = post.getOwner();
+        if (owner.getId() != user.getId()) {
+            try {
+                firebaseService.pushNotification(NotificationRequest.builder()
+                        .title(user.getName())
+                        .data(NotificationData.builder()
+                                .type(NotificationData.Type.POST)
+                                .title("Just like your post")
+                                .data(new Gson().toJson(postDTO))
+                                .build())
+                        .priority(AndroidConfig.Priority.HIGH)
+                        .tokens(owner.getDevices().stream()
+                                .map(device -> device.getFirebaseMessagingToken()).toList())
+                        .build());
+            } catch (FirebaseMessagingException e) {
+                e.printStackTrace();
+            }
+        }
+        return postDTO;
+    }
+
+    public PostDTO unlike(Long postId, Principal connectedUser) throws PostNotFoundException, UserNotFoundException {
+        User user = userService.getUserFromPrincipal(connectedUser);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("post with id '" + postId + "' not found"));
+        post.getLikes().remove(user);
+        user.getLikedPosts().remove(post);
+        userRepository.save(user);
+        PostDTO postDTO = PostDTO.fromPost(post);
+        postDTO.setIsLiked(
+                !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList())
+                        .isEmpty());
         return postDTO;
     }
 
@@ -122,8 +201,8 @@ public class PostService {
         userRepository.save(user);
         PostDTO postDTO = PostDTO.fromPost(post);
         postDTO.setIsLiked(
-            !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList()).isEmpty()
-        );
+                !postDTO.getLikes().stream().filter(u -> u.getId() == user.getId()).collect(Collectors.toList())
+                        .isEmpty());
         return postDTO;
     }
 

@@ -100,7 +100,7 @@ public class AuthenticationService {
                         .name(request.getName())
                         .build());
         Integer otp = mailService.sendOTP(user);
-        System.out.println(request.getEmail() + " -- otp: " + otp);
+        System.out.println(request.getEmail() + " -- otp: ******");
         String encodedOtp = passwordEncoder.encode(otp.toString());
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName("User" + otp);
